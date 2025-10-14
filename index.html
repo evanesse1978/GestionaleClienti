@@ -27,7 +27,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; 
+            justify-content: center; /* Centra verticalmente il box di login */
             align-items: center;
             min-height: 100vh;
             text-align: center;
@@ -226,7 +226,7 @@
             border: none;
         }
 
-        /* Login Box */
+        /* Login/Register Box */
         #auth-container {
             background: white;
             padding: 30px;
@@ -234,7 +234,6 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 400px;
-            margin: 20px 0;
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -250,7 +249,7 @@
             border-radius: 8px;
             font-size: 1em;
         }
-        #auth-container button {
+        #auth-container #submit-auth-btn {
             padding: 12px;
             border: none;
             border-radius: 8px;
@@ -260,9 +259,21 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-        #auth-container button:hover {
+        #auth-container #submit-auth-btn:hover {
             background-color: var(--primary-dark);
         }
+        #switch-auth-mode {
+            font-size: 0.9em;
+            color: #555;
+            cursor: pointer;
+            text-align: center;
+        }
+        #switch-auth-mode a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
 
         /* App Sections */
         #main-app, #client-archive { display: none; }
@@ -348,15 +359,16 @@
             <button id="logout-btn" class="backup-btn" style="background: #f44336;">Logout</button>
         </div>
         
-        <div id="landing-page-top-content">
-            <h1>Gestionale Clienti Personali</h1>
+        <div id="landing-page-content" style="width:100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <h1 id="main-title">Gestionale Clienti</h1>
             
             <div id="auth-container">
-                <h3>Accesso Gestionale</h3>
+                <h3 id="auth-title">Accedi</h3>
                 <input type="email" id="email-input" placeholder="Email" autocomplete="email">
                 <input type="password" id="password-input" placeholder="Password" autocomplete="current-password">
-                <button id="login-btn">Accedi</button>
+                <button id="submit-auth-btn">Accedi</button>
                 <p id="auth-error" style="color: red; min-height: 1.2em; margin: 0;"></p>
+                <p id="switch-auth-mode">Non hai un account? <a href="#">Registrati</a></p>
             </div>
 
             <div class="landing-buttons" style="display: none;">
@@ -364,38 +376,37 @@
                 <button id="goto-client-archive" class="landing-btn"><div class="icon">🗂️</div>Archivio Clienti</button>
             </div>
 
-            <div id="birthday-notifications"></div>
+            <div id="birthday-notifications" style="display: none;"></div>
+       
+            <div class="cf-utility-container" style="display: none;">
+                <h3>Utility Codice Fiscale</h3>
+                <div class="cf-tabs">
+                    <button id="tab-btn-calc" class="cf-tab-btn active">Calcola CF</button>
+                    <button id="tab-btn-rev" class="cf-tab-btn">Analizza CF</button>
+                </div>
+                <div id="cf-calc-panel" class="cf-panel active">
+                    <div class="cf-form">
+                        <input type="text" id="cf-cognome" placeholder="Cognome">
+                        <input type="text" id="cf-nome" placeholder="Nome">
+                        <input type="date" id="cf-data" placeholder="Data di Nascita">
+                        <select id="cf-sesso"><option value="M">Maschio</option><option value="F">Femmina</option></select>
+                        <input type="text" id="cf-comune" placeholder="Comune di Nascita (es: ROMA)">
+                    </div>
+                    <button id="calculate-cf-btn" style="margin-top: 10px;">Calcola</button>
+                    <div id="cf-result-calc" class="cf-result">
+                        <span id="cf-result-text"></span>
+                        <button id="cf-copy-btn" title="Copia Codice" style="display: none;">COPIA</button>
+                    </div>
+                </div>
+                <div id="cf-rev-panel" class="cf-panel">
+                    <div class="cf-form">
+                        <input type="text" id="cf-inverso-input" placeholder="Inserisci Codice Fiscale" maxlength="16" style="grid-column: 1 / -1;">
+                    </div>
+                    <button id="reverse-cf-btn" style="margin-top: 10px;">Analizza</button>
+                    <div id="cf-result-rev" class="cf-result"></div>
+                </div>
+            </div>
         </div>
-
-        <div class="cf-utility-container">
-            <h3>Utility Codice Fiscale</h3>
-            <div class="cf-tabs">
-                <button id="tab-btn-calc" class="cf-tab-btn active">Calcola CF</button>
-                <button id="tab-btn-rev" class="cf-tab-btn">Analizza CF</button>
-            </div>
-            <div id="cf-calc-panel" class="cf-panel active">
-                <div class="cf-form">
-                    <input type="text" id="cf-cognome" placeholder="Cognome">
-                    <input type="text" id="cf-nome" placeholder="Nome">
-                    <input type="date" id="cf-data" placeholder="Data di Nascita">
-                    <select id="cf-sesso"><option value="M">Maschio</option><option value="F">Femmina</option></select>
-                    <input type="text" id="cf-comune" placeholder="Comune di Nascita (es: ROMA)">
-                </div>
-                <button id="calculate-cf-btn" style="margin-top: 10px;">Calcola</button>
-                <div id="cf-result-calc" class="cf-result">
-                    <span id="cf-result-text"></span>
-                    <button id="cf-copy-btn" title="Copia Codice" style="display: none;">COPIA</button>
-                </div>
-            </div>
-            <div id="cf-rev-panel" class="cf-panel">
-                <div class="cf-form">
-                    <input type="text" id="cf-inverso-input" placeholder="Inserisci Codice Fiscale" maxlength="16" style="grid-column: 1 / -1;">
-                </div>
-                <button id="reverse-cf-btn" style="margin-top: 10px;">Analizza</button>
-                <div id="cf-result-rev" class="cf-result"></div>
-            </div>
-        </div>
-
         <input type="file" id="import-file" accept=".json" style="display: none;">
     </div>
     <div id="main-app" class="padding-24">
@@ -462,7 +473,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-    // Configurazione Firebase - INCOLLATA DA TE
+    // Configurazione Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDhhNoGXZdAMHdGgqUNGrVl1JtuErcOhe4",
         authDomain: "gestionaleclienti-696e8.firebaseapp.com",
@@ -476,33 +487,40 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    let currentUser = null; // Conterrà le info dell'utente loggato
+    let currentUser = null; 
+    let isLoginMode = true;
 
     // ELEMENTI UI DA GESTIRE
     const authContainer = document.getElementById('auth-container');
     const landingButtons = document.querySelector('.landing-buttons');
     const topRightButtons = document.querySelector('.top-right-buttons');
-    const loginBtn = document.getElementById('login-btn');
+    const submitAuthBtn = document.getElementById('submit-auth-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const emailInput = document.getElementById('email-input');
     const passwordInput = document.getElementById('password-input');
     const authError = document.getElementById('auth-error');
+    const switchAuthModeLink = document.getElementById('switch-auth-mode');
+    const authTitle = document.getElementById('auth-title');
+    const cfUtilityContainer = document.querySelector('.cf-utility-container');
+    const mainTitle = document.getElementById('main-title');
+    const birthdayNotifications = document.getElementById('birthday-notifications');
 
-    // Listener per lo stato di autenticazione (cuore del sistema di login)
+    // Listener per lo stato di autenticazione
     auth.onAuthStateChanged(user => {
         if (user) {
-            // L'utente è loggato
+            // Utente LOGGATO
             currentUser = user;
-            authContainer.style.display = 'none'; // Nascondi il form di login
-            landingButtons.style.display = 'grid'; // Mostra i pulsanti principali
-            topRightButtons.style.display = 'flex'; // Mostra pulsanti logout/import
+            authContainer.style.display = 'none';
+            mainTitle.style.display = 'block';
+            landingButtons.style.display = 'grid';
+            topRightButtons.style.display = 'flex';
+            cfUtilityContainer.style.display = 'block';
+            birthdayNotifications.style.display = 'block';
             
-            // Carica i dati da Firestore
             console.log("Utente autenticato, carico i dati da Firestore...");
             const userDocRef = db.collection('clienti').doc(currentUser.uid);
             userDocRef.get().then(doc => {
                 if (doc.exists) {
-                    // JSON.parse può fallire se il dato è malformato
                     try {
                         clients = JSON.parse(doc.data().data);
                         console.log("Dati recuperati con successo da Firebase.");
@@ -511,61 +529,102 @@
                          clients = [];
                     }
                 } else {
-                    console.log("Nessun dato precedente trovato. Inizio con un database vuoto.");
+                    console.log("Nessun dato precedente. Inizio con un database vuoto.");
                     clients = [];
                 }
                 renderBirthdayNotifications();
                 if(mainAppPage.style.display === 'block') renderTable();
                 if(clientArchivePage.style.display === 'block') renderClientArchive();
-
             }).catch(error => {
                 console.error("Errore nel recupero dati da Firestore: ", error);
-                alert("Errore critico: impossibile caricare i dati. Controlla la console per i dettagli.");
+                alert("Errore critico: impossibile caricare i dati.");
             });
-
         } else {
-            // L'utente non è loggato
+            // Utente NON LOGGATO
             currentUser = null;
-            clients = []; // Svuota i dati
-            authContainer.style.display = 'flex'; // Mostra il form di login
-            landingButtons.style.display = 'none';  // Nascondi il resto
+            clients = [];
+            authContainer.style.display = 'flex';
+            mainTitle.style.display = 'none'; // Nasconde il titolo principale
+            landingButtons.style.display = 'none';
             topRightButtons.style.display = 'none';
-            showPage(landingPage); // Forza la visualizzazione della landing page
+            cfUtilityContainer.style.display = 'none'; // Nasconde l'utility CF
+            birthdayNotifications.style.display = 'none';
+            showPage(landingPage);
             console.log("Utente non autenticato.");
         }
     });
+    
+    // Funzione per cambiare tra Login e Registrazione
+    const toggleAuthMode = () => {
+        isLoginMode = !isLoginMode;
+        authError.textContent = '';
+        if (isLoginMode) {
+            authTitle.textContent = 'Accedi';
+            submitAuthBtn.textContent = 'Accedi';
+            switchAuthModeLink.innerHTML = 'Non hai un account? <a href="#">Registrati</a>';
+        } else {
+            authTitle.textContent = 'Registrati';
+            submitAuthBtn.textContent = 'Registrati';
+            switchAuthModeLink.innerHTML = 'Hai già un account? <a href="#">Accedi</a>';
+        }
+    };
 
-    // Aggiungi listener per il pulsante di login
-    loginBtn.addEventListener('click', () => {
+    switchAuthModeLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleAuthMode();
+    });
+
+    // Listener per il pulsante di submit (Login o Registrazione)
+    submitAuthBtn.addEventListener('click', () => {
         const email = emailInput.value;
         const password = passwordInput.value;
-        authError.textContent = ''; // Pulisce errori precedenti
+        authError.textContent = '';
 
         if (!email || !password) {
             authError.textContent = 'Inserire email e password.';
             return;
         }
 
-        auth.signInWithEmailAndPassword(email, password)
-            .catch(error => {
-                console.error("Errore di login:", error.code, error.message);
-                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                     authError.textContent = 'Credenziali non valide.';
-                } else {
-                     authError.textContent = 'Errore di autenticazione.';
-                }
-            });
+        if (isLoginMode) {
+            // Modalità LOGIN
+            auth.signInWithEmailAndPassword(email, password)
+                .catch(error => {
+                    console.error("Errore di login:", error.code, error.message);
+                    if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                         authError.textContent = 'Credenziali non valide.';
+                    } else {
+                         authError.textContent = 'Errore di autenticazione.';
+                    }
+                });
+        } else {
+            // Modalità REGISTRAZIONE
+            if (password.length < 6) {
+                authError.textContent = 'La password deve essere di almeno 6 caratteri.';
+                return;
+            }
+            auth.createUserWithEmailAndPassword(email, password)
+                .catch(error => {
+                    console.error("Errore di registrazione:", error.code, error.message);
+                    if (error.code === 'auth/email-already-in-use') {
+                        authError.textContent = 'Questa email è già registrata.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        authError.textContent = 'Email non valida.';
+                    } else {
+                        authError.textContent = 'Errore di registrazione.';
+                    }
+                });
+        }
     });
 
-    // Aggiungi listener per il pulsante di logout
+    // Listener per il pulsante di logout
     logoutBtn.addEventListener('click', () => {
          auth.signOut();
     });
 
     //<editor-fold desc="Variabili Globali e Funzioni Pagine">
-    let clients = []; // VIENE POPOLATO DA FIREBASE DOPO IL LOGIN
+    let clients = []; 
     let isSortedAsc = true;
-    let comuniData = null; // Conterrà i dati dei comuni
+    let comuniData = null; 
     
     const landingPage = document.getElementById('landing-page');
     const mainAppPage = document.getElementById('main-app');
@@ -1150,16 +1209,14 @@
     const editClient = (id) => { const c = clients.find(cl => cl.id === id); if (!c) return; document.getElementById('clientId').value = c.id; document.getElementById('nomeCliente').value = c.nomeCliente; document.getElementById('codiceFiscale').value = c.codiceFiscale || ''; document.getElementById('email').value = c.email || ''; document.getElementById('cellulare').value = c.cellulare || ''; document.getElementById('numeroPolizza').value = c.numeroPolizza; document.getElementById('ramoPolizza').value = c.ramoPolizza; document.getElementById('tipoPolizza').value = c.tipoPolizza || ''; document.getElementById('dataScadenza').value = c.dataScadenza; document.getElementById('frazionamento').value = c.frazionamento; document.getElementById('premio').value = c.premio; document.getElementById('pagato').checked = c.pagato; document.getElementById('isAnnual').checked = c.isAnnual; toggleDataIncasso(c.pagato); if (c.pagato) document.getElementById('dataIncasso').value = c.dataIncasso; const comp = document.getElementById('compagnia'), altro = document.getElementById('compagniaAltro'); const isStd = [...comp.options].some(opt => opt.value === c.compagnia); comp.value = isStd ? c.compagnia : 'Altro'; altro.style.display = isStd ? 'none' : 'block'; altro.value = isStd ? '' : c.compagnia; document.getElementById('form-title').textContent = 'Modifica Titolo'; document.getElementById('submit-button').textContent = 'Salva Modifiche'; document.getElementById('form-title').scrollIntoView({ behavior: 'smooth' }); };
     const importFromJson = (e) => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); if (!Array.isArray(d)) throw new Error("File non valido."); if (confirm("ATTENZIONE: Sovrascrivere i dati attuali? I dati verranno salvati su Firebase.")) { clients = d; saveClients(); alert("Dati importati e salvati su Firebase! Verranno visualizzati a breve."); renderTable(); renderClientArchive(); } } catch (err) { alert("Errore: File non valido o corrotto."); } e.target.value = ''; }; r.readAsText(f); };
     
-    // MODIFICATA: Salva su Firestore invece che su localStorage
     const saveClients = () => {
         if (currentUser) {
             const userDocRef = db.collection('clienti').doc(currentUser.uid);
-            // Salva l'intero array di clienti come una stringa JSON in un unico documento.
             userDocRef.set({ data: JSON.stringify(clients) })
                 .then(() => console.log("Backup su Firebase riuscito!"))
                 .catch(error => {
                     console.error("Errore nel backup su Firebase: ", error);
-                    alert("ATTENZIONE: Salvataggio su Cloud fallito. Controlla la connessione e la console per i dettagli.");
+                    alert("ATTENZIONE: Salvataggio su Cloud fallito.");
                 });
         } else {
             console.warn("Nessun utente loggato, salvataggio ignorato.");
@@ -1319,9 +1376,6 @@
         const container = document.getElementById('birthday-notifications');
         const today = new Date();
         
-        // La gestione degli auguri inviati ora dipende solo dalla visualizzazione
-        // e non da un salvataggio persistente separato.
-        
         const birthdayClientsToday = clients.filter(client => {
             if (!client.codiceFiscale) return false;
             const birthDate = getBirthdayFromCF(client.codiceFiscale);
@@ -1350,7 +1404,6 @@
     };
 
     const markGreetingAsSent = (clientId) => {
-        // Rimuove visivamente il cliente dalla lista dei compleanni di oggi
         const bdayItem = document.getElementById(`bday-${clientId}`);
         if(bdayItem) {
             bdayItem.style.transition = 'opacity 0.5s';
