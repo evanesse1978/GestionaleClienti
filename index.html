@@ -338,7 +338,7 @@
             #main-app { display: block !important; }
             #main-app .container { box-shadow: none; border: none; padding: 0; margin: 0; max-width: 100%; }
             #print-header { display: block !important; font-size: 24pt; font-weight: bold; text-align: center; margin-bottom: 20px; color: black; }
-            .header-section, .controls-container, #client-form, #form-title, h2, .action-cell { display: none !important; }
+            .header-section, .controls-container, #client-form, #form-title, h2 { display: none !important; }
             
             /* RIPRISTINO TABELLA PER LA STAMPA */
             #main-app table { display: table !important; }
@@ -347,7 +347,9 @@
             #main-app table tr { display: table-row !important; }
             #main-app table th, #main-app table td { display: table-cell !important; padding: 6px; border: 1px solid #666;}
             #main-app table td::before { content: "" !important; display: none !important; }
-            table th:last-child, table td:last-child { display: table-cell !important; }
+            
+            /* NASCONDI COLONNA AZIONI IN STAMPA */
+            table th:last-child, table td:last-child { display: none !important; }
             
             .summary { text-align: right; border: 1px solid #ccc; background-color: #f0f0f0 !important; }
             th { background-color: #ddd !important; }
