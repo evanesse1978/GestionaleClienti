@@ -339,10 +339,17 @@
             #main-app .container { box-shadow: none; border: none; padding: 0; margin: 0; max-width: 100%; }
             #print-header { display: block !important; font-size: 24pt; font-weight: bold; text-align: center; margin-bottom: 20px; color: black; }
             .header-section, .controls-container, #client-form, #form-title, h2, .action-cell { display: none !important; }
-            table th:last-child, table td:last-child { display: none !important; }
+            
+            /* RIPRISTINO TABELLA PER LA STAMPA */
+            #main-app table { display: table !important; }
+            #main-app table thead { display: table-header-group !important; }
+            #main-app table tbody { display: table-row-group !important; }
+            #main-app table tr { display: table-row !important; }
+            #main-app table th, #main-app table td { display: table-cell !important; padding: 6px; border: 1px solid #666;}
+            #main-app table td::before { content: "" !important; display: none !important; }
+            table th:last-child, table td:last-child { display: table-cell !important; }
+            
             .summary { text-align: right; border: 1px solid #ccc; background-color: #f0f0f0 !important; }
-            table { font-size: 0.8em; width: 100%; }
-            th, td { border: 1px solid #666; padding: 6px; }
             th { background-color: #ddd !important; }
             tr.status-paid { background-color: #e7f5e8 !important; }
             tr.status-warning { background-color: #fffbea !important; }
@@ -353,125 +360,67 @@
 
         /* --- Stili Responsivi --- */
         @media (max-width: 1200px) {
-            .container {
-                padding: 24px;
-            }
-            .landing-buttons {
-                gap: 30px;
-            }
-            .landing-btn {
-                width: 240px;
-                height: 180px;
-                font-size: 1.5em;
-            }
+            .container { padding: 24px; }
+            .landing-buttons { gap: 30px; }
+            .landing-btn { width: 240px; height: 180px; font-size: 1.5em; }
         }
 
         /* Tablet, Foldable e Smartphone Grandi */
         @media (max-width: 992px) {
-            #landing-page h1 {
-                font-size: 3em;
-            }
-            .landing-buttons {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            .landing-btn {
-                width: 100%;
-                max-width: 350px;
-                height: 150px;
-            }
+            #landing-page h1 { font-size: 3em; }
+            .landing-buttons { grid-template-columns: 1fr; gap: 20px; }
+            .landing-btn { width: 100%; max-width: 350px; height: 150px; }
 
             /* Trasforma la tabella in schede */
-            #main-app table thead {
-                display: none; /* Nascondi l'header della tabella */
-            }
-            #main-app table, #main-app table tbody, #main-app table tr, #main-app table td {
-                display: block;
-                width: 100%;
-            }
-            #main-app table tr {
-                margin-bottom: 15px;
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            }
+            #main-app table thead { display: none; }
+            #main-app table, #main-app table tbody, #main-app table tr, #main-app table td { display: block; width: 100%; }
+            #main-app table tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+            
+            /* OTTIMIZZAZIONE VISTA SCHEDE */
             #main-app table td {
                 display: flex;
-                justify-content: space-between;
+                justify-content: flex-start; /* Allinea a sinistra */
                 align-items: center;
-                padding: 10px 15px;
-                text-align: right;
+                gap: 10px; /* Spazio tra etichetta e valore */
+                padding: 12px 15px;
+                text-align: left; /* Allinea il testo del valore a sinistra */
                 border-bottom: 1px dotted var(--border-color);
+                flex-wrap: wrap; /* Permette al contenuto di andare a capo */
             }
-            #main-app table td:last-child {
-                border-bottom: none;
-            }
+            #main-app table td:last-child { border-bottom: none; }
             #main-app table td::before {
                 content: attr(data-label);
                 font-weight: 500;
-                text-align: left;
                 color: var(--text-light);
-                margin-right: 10px;
+                flex-basis: 110px; /* Larghezza fissa per le etichette */
+                flex-shrink: 0; /* Impedisce alle etichette di rimpicciolirsi */
+                text-align: left;
             }
-            td .inline-editable {
-                width: 80px;
-                text-align: right;
-            }
-            .action-cell {
-                justify-content: flex-end; /* Allinea le azioni a destra */
-            }
-            .form-field {
-                min-width: 100%;
-            }
+            
+            td .inline-editable { width: 100px; text-align: right; }
+            .action-cell { flex-wrap: nowrap; justify-content: flex-end; }
         }
 
         /* Smartphone Piccoli e Medi */
         @media (max-width: 767px) {
-            .padding-24 {
-                padding: 12px;
-            }
-            .container {
-                padding: 16px;
-            }
-            .header-section {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
+            .padding-24 { padding: 12px; }
+            .container { padding: 16px; }
+            .header-section { flex-direction: column; align-items: flex-start; gap: 15px; }
             h1 { font-size: 1.8em; }
             h2 { font-size: 1.4em; }
-            #landing-page h1 {
-                font-size: 2.2em;
-                margin-bottom: 30px;
-            }
+            #landing-page h1 { font-size: 2.2em; margin-bottom: 30px; }
             
-            .all-filters-container, .actions, .archive-filters {
-                flex-direction: column;
-                align-items: stretch;
-                width: 100%;
-            }
-            .filters-group {
-                width: auto;
-            }
-            .archive-filters input {
-                width: 100%;
-                box-sizing: border-box;
+            /* NASCONDI ELEMENTI SU MOBILE */
+            #export-btn, #import-btn, .cf-utility-container {
+                display: none !important;
             }
 
-            #client-form {
-                grid-template-columns: 1fr;
-            }
-            
-            .client-info-grid, .client-data-fields {
-                grid-template-columns: 1fr;
-            }
-            .client-controls {
-                flex-direction: column;
-                gap: 10px;
-                align-items: stretch;
-                text-align: center;
-            }
+            .all-filters-container, .actions, .archive-filters { flex-direction: column; align-items: stretch; width: 100%; }
+            .filters-group { width: auto; }
+            .archive-filters input { width: 100%; box-sizing: border-box; }
+            #client-form { grid-template-columns: 1fr; }
+            .client-info-grid, .client-data-fields { grid-template-columns: 1fr; }
+            .client-controls { flex-direction: column; gap: 10px; align-items: stretch; text-align: center; }
         }
 
     </style>
@@ -1207,7 +1156,9 @@
         let totalProvvigioni = 0;
         
         if (filteredClients.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding:20px;">Nessun risultato trovato.</td></tr>`;
+            const isMobile = window.innerWidth <= 992;
+            const colspan = isMobile ? 1 : 15;
+            tableBody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding:20px;">Nessun risultato trovato.</td></tr>`;
             document.getElementById('summary').textContent = 'Totale Premi Incassati (visualizzati): 0.00 € | Totale Provvigioni Incassate (visualizzate): 0.00 €';
             return;
         }
@@ -1659,4 +1610,3 @@
 </script>
 </body>
 </html>
-
