@@ -1328,9 +1328,15 @@
         if(!confirm(`Creare rinnovi per ${t} da polizze annuali del ${r}?`))return;
         
         const excludedFraz = ['Temporanea', 'Premio Unico', 'Annullamento'];
-        const p=clients.filter(c=>c.isAnnual && new Date(c.dataScadenza).getFullYear()==r && !excludedFraz.includes(c.frazionamento));
+        // MODIFICA: Aggiunto controllo per c.status !== 'annullata'
+        const p=clients.filter(c=>
+            c.isAnnual && 
+            new Date(c.dataScadenza).getFullYear()==r && 
+            !excludedFraz.includes(c.frazionamento) &&
+            c.status !== 'annullata'
+        );
         
-        if(p.length===0){alert(`Nessuna polizza annuale trovata per ${r} da rinnovare.`);return}
+        if(p.length===0){alert(`Nessuna polizza annuale attiva trovata per ${r} da rinnovare.`);return}
         let n=0;
         p.forEach(o=>{
             const d=new Date(o.dataScadenza),e=new Date(d.setFullYear(d.getFullYear()+1)),x=clients.some(c=>c.numeroPolizza===o.numeroPolizza&&new Date(c.dataScadenza).getFullYear()===t);
