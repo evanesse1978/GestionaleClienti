@@ -543,7 +543,6 @@
         </div>
     </div>
 
-    <!-- Script Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -1079,6 +1078,7 @@
     
     const getRamoClass = (ramo) => { if (!ramo) return ''; const l = ramo.toLowerCase(); if (l.includes('auto')) return 'ramo-auto'; if (l.includes('vari')) return 'ramo-rami-vari'; if (l.includes('vita')) return 'ramo-vita'; return ''; };
     
+    // --- FUNZIONE MODIFICATA --- //
     const toggleClientDetails = (element, clientName) => {
         const detailsContainer = element.closest('.client-header').nextElementSibling;
         if (detailsContainer.style.maxHeight) {
@@ -1103,13 +1103,13 @@
                         const compagnia = firstTitle.compagnia || 'N/D';
                         return `
                         <div class="policy-item">
-                            <div class="policy-header ${getRamoClass(ramo)}">
+                            <div class="policy-header ${getRamoClass(ramo)}" onclick="togglePolicyDetails(this)" style="cursor: pointer;">
                                 <span><strong>Polizza:</strong> ${policyNumber}</span>
                                 <span><strong>Compagnia:</strong> ${compagnia}</span>
                                 <span><strong>Ramo:</strong> ${ramo}</span>
-                                <span>${policiesByNumber[policyNumber].length} titoli</span>
+                                <span>${policiesByNumber[policyNumber].length} titoli ▾</span>
                             </div>
-                            <div class="title-list">
+                            <div class="policy-details title-list">
                                 ${policiesByNumber[policyNumber].sort((a,b) => new Date(a.dataScadenza) - new Date(b.dataScadenza)).map(title => `
                                     <div class="title-item">
                                         <span>Scad: ${new Date(title.dataScadenza).toLocaleDateString('it-IT')}</span>
@@ -1313,6 +1313,21 @@
     const toggleDataIncasso = (p) => { const c=document.getElementById('dataIncassoContainer'),i=document.getElementById('dataIncasso');c.style.display=p?'block':'none';i.required=p;if(p&&!i.value)i.value=new Date().toISOString().slice(0,10);};
     const generateInstallments = (p)=>{const m={'Semestrale':6,'Quadrimestrale':4,'Trimestrale':3},inc=m[p.frazionamento];if(!inc)return;let count=12/inc-1;for(let i=1;i<=count;i++){const inst={...p},sD=new Date(p.dataScadenza),nD=new Date(sD.setMonth(sD.getMonth()+(inc*i)));inst.id='id-'+Date.now()+i;inst.dataScadenza=nD.toISOString().slice(0,10);inst.isAnnual=false;inst.pagato=false;inst.dataIncasso=null;inst.differenza=0;inst.provvigioni=0;clients.push(inst);}};
     
+    // --- FUNZIONE MODIFICATA --- //
+    const parseDate = (dateStr) => {
+        const parts = dateStr.split('/');
+        if (parts.length !== 3) return null;
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // Mese è 0-indicizzato in JS
+        const year = parseInt(parts[2], 10);
+        const date = new Date(year, month, day);
+        if (date.getFullYear() === year && date.getMonth() === month && date.getDate() === day) {
+            return date;
+        }
+        return null;
+    };
+
+    // --- FUNZIONE MODIFICATA --- //
     const updateStatus = (id, newStatus) => {
         const recordIndex = clients.findIndex(c => c.id === id);
         if (recordIndex === -1) return;
@@ -1320,21 +1335,21 @@
         const originalRecord = clients[recordIndex];
 
         if (newStatus === 'sospesa') {
-            const suspensionDateStr = prompt("Inserisci la data di SOSPENSIONE (formato AAAA-MM-GG):");
+            const suspensionDateStr = prompt("Inserisci la data di SOSPENSIONE (formato GG/MM/AAAA):");
             if (!suspensionDateStr) { renderTable(); return; }
             
-            const suspensionDate = new Date(suspensionDateStr);
-            if (isNaN(suspensionDate.getTime())) {
-                alert("Data di sospensione non valida. L'operazione è stata annullata.");
+            const suspensionDate = parseDate(suspensionDateStr);
+            if (!suspensionDate) {
+                alert("Data di sospensione non valida. Usare il formato GG/MM/AAAA. L'operazione è stata annullata.");
                 renderTable(); return;
             }
 
-            const reactivationDateStr = prompt("Inserisci la data di RIATTIVAZIONE (formato AAAA-MM-GG):");
+            const reactivationDateStr = prompt("Inserisci la data di RIATTIVAZIONE (formato GG/MM/AAAA):");
             if (!reactivationDateStr) { renderTable(); return; }
 
-            const reactivationDate = new Date(reactivationDateStr);
-            if (isNaN(reactivationDate.getTime())) {
-                alert("Data di riattivazione non valida. L'operazione è stata annullata.");
+            const reactivationDate = parseDate(reactivationDateStr);
+            if (!reactivationDate) {
+                alert("Data di riattivazione non valida. Usare il formato GG/MM/AAAA. L'operazione è stata annullata.");
                 renderTable(); return;
             }
 
@@ -1342,19 +1357,21 @@
                 alert("La data di riattivazione deve essere successiva a quella di sospensione. L'operazione è stata annullata.");
                 renderTable(); return;
             }
-
+            
+            // Imposta lo stato del titolo su cui si è agito a 'sospesa' per un feedback visivo
+            originalRecord.status = 'sospesa';
             const durationMs = reactivationDate.getTime() - suspensionDate.getTime();
 
             clients.forEach(client => {
+                // Trova tutti i titoli della stessa polizza con scadenza uguale o successiva alla data di sospensione
                 if (client.numeroPolizza === originalRecord.numeroPolizza && new Date(client.dataScadenza) >= suspensionDate) {
                     const oldDueDate = new Date(client.dataScadenza);
                     const newDueDate = new Date(oldDueDate.getTime() + durationMs);
                     client.dataScadenza = newDueDate.toISOString().slice(0, 10);
-                    client.status = 'attiva'; 
                 }
             });
 
-            alert("Scadenze aggiornate con successo in base al periodo di sospensione.");
+            alert("Polizza sospesa con successo. Le scadenze future sono state posticipate.");
             saveClients();
             renderTable();
         } else {
@@ -1412,7 +1429,6 @@
         if(!confirm(`Creare rinnovi per ${t} da polizze annuali del ${r}?`))return;
         
         const excludedFraz = ['Temporanea', 'Premio Unico', 'Annullamento'];
-        // MODIFICA CORRETTA: Aggiunto controllo per c.status !== 'annullata'
         const p=clients.filter(c=>
             c.isAnnual && 
             new Date(c.dataScadenza).getFullYear()==r && 
