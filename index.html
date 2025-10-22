@@ -11,6 +11,7 @@
             --text-light: #7A8C99; --status-paid: #E7F5E8; --status-warning: #FFFBEA; 
             --status-danger: #FDECEA; --status-suspended: #EAF2FA; --birthday-bg: #fff9c4;
             --neumorphic-bg: #eef2f7; --neumorphic-shadow-light: #ffffff; --neumorphic-shadow-dark: #d1d9e6;
+            --success-color: #4CAF50; --success-dark: #388E3C;
         }
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@700&display=swap');
@@ -27,7 +28,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Centra verticalmente il box di login */
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
             text-align: center;
@@ -153,23 +154,61 @@
         #birthday-notifications { background-color: var(--birthday-bg); border-left: 5px solid #FBC02D; padding: 16px; margin-top: 40px; border-radius: 5px; width: 80%; max-width: 600px; text-align: left; }
         .birthday-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #FFFDE7; }
         
+        /* NUOVI STILI UTILITY CODICE FISCALE */
+        #cf-utility-wrapper {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            z-index: 1000;
+            display: none;
+        }
+        #cf-utility-minimized {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background-color: var(--surface-color);
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+        }
+        #cf-utility-minimized:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        #cf-utility-minimized span {
+            font-size: 1.2em;
+        }
+
         .cf-utility-container {
             width: 100%;
             max-width: 600px;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 0;
             background: var(--neumorphic-bg);
             border-radius: 15px;
             padding: 15px;
             box-shadow: 
                 8px 8px 16px var(--neumorphic-shadow-dark), 
                 -8px -8px 16px var(--neumorphic-shadow-light);
+            display: none; /* Nascosto di default */
         }
         .cf-utility-container h3 {
              font-family: 'Exo 2', sans-serif;
              color: #388e3c;
              margin-bottom: 10px;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
         }
+        .cf-utility-close-btn {
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 5px;
+        }
+
         .cf-tabs {
             display: flex;
             justify-content: center;
@@ -278,6 +317,29 @@
         /* App Sections */
         #main-app, #client-archive { display: none; }
 
+        /* NUOVI STILI FORM POLIZZE */
+        .form-actions-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        #show-form-btn {
+            background-color: var(--success-color);
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+        }
+        #show-form-btn:hover {
+            background-color: var(--success-dark);
+        }
+        .form-buttons {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
         /* Client Archive Styles */
         .archive-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .archive-filters { display: flex; gap: 15px; margin-bottom: 20px; background-color: var(--secondary-color); padding: 16px; border-radius: 8px; align-items: center; }
@@ -317,7 +379,7 @@
         button:hover { border-color: var(--primary-color); background-color: var(--primary-color); color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(74, 144, 226, 0.2); }
         form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; background-color: var(--secondary-color); padding: 24px; border-radius: 8px; align-items: end; }
         .form-field label { display: block; margin-bottom: 6px; font-size: 0.9em; font-weight: 500; color: var(--text-light); }
-        .form-submit-button { background-color: var(--primary-color); color: white; font-size: 1.1em; grid-column: 1 / -1; }
+        .form-submit-button { background-color: var(--primary-color); color: white; font-size: 1.1em; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9em; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
         th { background-color: var(--secondary-color); color: var(--text-light); font-weight: 500; text-transform: uppercase; font-size: 0.8em; }
@@ -327,6 +389,19 @@
         .modal-overlay { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-content { background-color: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; width: 90%; max-width: 400px; }
         
+        /* NUOVO STILE FIRMA */
+        #signature {
+            position: fixed;
+            bottom: 10px;
+            right: 15px;
+            font-family: 'Brush Script MT', 'cursive', sans-serif;
+            font-style: italic;
+            font-size: 1.1em;
+            color: #888;
+            pointer-events: none; /* Rende la firma non cliccabile */
+            z-index: 9999;
+        }
+
         /* --- Stili Stampa --- */
         @media print {
             @page {
@@ -338,9 +413,8 @@
             #main-app { display: block !important; }
             #main-app .container { box-shadow: none; border: none; padding: 0; margin: 0; max-width: 100%; }
             #print-header { display: block !important; font-size: 24pt; font-weight: bold; text-align: center; margin-bottom: 20px; color: black; }
-            .header-section, .controls-container, #client-form, #form-title, h2 { display: none !important; }
+            .header-section, .controls-container, #form-container, #show-form-btn, h2 { display: none !important; }
             
-            /* RIPRISTINO TABELLA PER LA STAMPA */
             #main-app table { display: table !important; }
             #main-app table thead { display: table-header-group !important; }
             #main-app table tbody { display: table-row-group !important; }
@@ -348,7 +422,6 @@
             #main-app table th, #main-app table td { display: table-cell !important; padding: 6px; border: 1px solid #666;}
             #main-app table td::before { content: "" !important; display: none !important; }
             
-            /* NASCONDI COLONNA AZIONI IN STAMPA */
             table th:last-child, table td:last-child { display: none !important; }
             
             .summary { text-align: right; border: 1px solid #ccc; background-color: #f0f0f0 !important; }
@@ -367,35 +440,32 @@
             .landing-btn { width: 240px; height: 180px; font-size: 1.5em; }
         }
 
-        /* Tablet, Foldable e Smartphone Grandi */
         @media (max-width: 992px) {
             #landing-page h1 { font-size: 3em; }
             .landing-buttons { grid-template-columns: 1fr; gap: 20px; }
             .landing-btn { width: 100%; max-width: 350px; height: 150px; }
 
-            /* Trasforma la tabella in schede */
             #main-app table thead { display: none; }
             #main-app table, #main-app table tbody, #main-app table tr, #main-app table td { display: block; width: 100%; }
             #main-app table tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
             
-            /* OTTIMIZZAZIONE VISTA SCHEDE */
             #main-app table td {
                 display: flex;
-                justify-content: flex-start; /* Allinea a sinistra */
+                justify-content: flex-start;
                 align-items: center;
-                gap: 10px; /* Spazio tra etichetta e valore */
+                gap: 10px;
                 padding: 12px 15px;
-                text-align: left; /* Allinea il testo del valore a sinistra */
+                text-align: left;
                 border-bottom: 1px dotted var(--border-color);
-                flex-wrap: wrap; /* Permette al contenuto di andare a capo */
+                flex-wrap: wrap;
             }
             #main-app table td:last-child { border-bottom: none; }
             #main-app table td::before {
                 content: attr(data-label);
                 font-weight: 500;
                 color: var(--text-light);
-                flex-basis: 110px; /* Larghezza fissa per le etichette */
-                flex-shrink: 0; /* Impedisce alle etichette di rimpicciolirsi */
+                flex-basis: 110px;
+                flex-shrink: 0;
                 text-align: left;
             }
             
@@ -403,7 +473,6 @@
             .action-cell { flex-wrap: nowrap; justify-content: flex-end; }
         }
 
-        /* Smartphone Piccoli e Medi */
         @media (max-width: 767px) {
             .padding-24 { padding: 12px; }
             .container { padding: 16px; }
@@ -412,10 +481,8 @@
             h2 { font-size: 1.4em; }
             #landing-page h1 { font-size: 2.2em; margin-bottom: 30px; }
             
-            /* NASCONDI ELEMENTI SU MOBILE */
-            #export-btn, #import-btn, .cf-utility-container {
-                display: none !important;
-            }
+            #export-btn, #import-btn { display: none !important; }
+            #cf-utility-wrapper { display: none !important; }
 
             .all-filters-container, .actions, .archive-filters { flex-direction: column; align-items: stretch; width: 100%; }
             .filters-group { width: auto; }
@@ -454,37 +521,43 @@
 
             <div id="birthday-notifications" style="display: none;"></div>
        
-            <div class="cf-utility-container" style="display: none;">
-                <h3>Utility Codice Fiscale</h3>
-                <div class="cf-tabs">
-                    <button id="tab-btn-calc" class="cf-tab-btn active">Calcola CF</button>
-                    <button id="tab-btn-rev" class="cf-tab-btn">Analizza CF</button>
+            <div id="cf-utility-wrapper">
+                <div id="cf-utility-minimized">
+                    <span><strong>CF</strong></span> Utility Codice Fiscale <span>+</span>
                 </div>
-                <div id="cf-calc-panel" class="cf-panel active">
-                    <div class="cf-form">
-                        <input type="text" id="cf-cognome" placeholder="Cognome">
-                        <input type="text" id="cf-nome" placeholder="Nome">
-                        <input type="date" id="cf-data" placeholder="Data di Nascita">
-                        <select id="cf-sesso"><option value="M">Maschio</option><option value="F">Femmina</option></select>
-                        <input type="text" id="cf-comune" placeholder="Comune di Nascita (es: ROMA)">
+                <div class="cf-utility-container">
+                    <h3>Utility Codice Fiscale <span class="cf-utility-close-btn">▾</span></h3>
+                    <div class="cf-tabs">
+                        <button id="tab-btn-calc" class="cf-tab-btn active">Calcola CF</button>
+                        <button id="tab-btn-rev" class="cf-tab-btn">Analizza CF</button>
                     </div>
-                    <button id="calculate-cf-btn" style="margin-top: 10px;">Calcola</button>
-                    <div id="cf-result-calc" class="cf-result">
-                        <span id="cf-result-text"></span>
-                        <button id="cf-copy-btn" title="Copia Codice" style="display: none;">COPIA</button>
+                    <div id="cf-calc-panel" class="cf-panel active">
+                        <div class="cf-form">
+                            <input type="text" id="cf-cognome" placeholder="Cognome">
+                            <input type="text" id="cf-nome" placeholder="Nome">
+                            <input type="date" id="cf-data" placeholder="Data di Nascita">
+                            <select id="cf-sesso"><option value="M">Maschio</option><option value="F">Femmina</option></select>
+                            <input type="text" id="cf-comune" placeholder="Comune di Nascita (es: ROMA)">
+                        </div>
+                        <button id="calculate-cf-btn" style="margin-top: 10px;">Calcola</button>
+                        <div id="cf-result-calc" class="cf-result">
+                            <span id="cf-result-text"></span>
+                            <button id="cf-copy-btn" title="Copia Codice" style="display: none;">COPIA</button>
+                        </div>
                     </div>
-                </div>
-                <div id="cf-rev-panel" class="cf-panel">
-                    <div class="cf-form">
-                        <input type="text" id="cf-inverso-input" placeholder="Inserisci Codice Fiscale" maxlength="16" style="grid-column: 1 / -1;">
+                    <div id="cf-rev-panel" class="cf-panel">
+                        <div class="cf-form">
+                            <input type="text" id="cf-inverso-input" placeholder="Inserisci Codice Fiscale" maxlength="16" style="grid-column: 1 / -1;">
+                        </div>
+                        <button id="reverse-cf-btn" style="margin-top: 10px;">Analizza</button>
+                        <div id="cf-result-rev" class="cf-result"></div>
                     </div>
-                    <button id="reverse-cf-btn" style="margin-top: 10px;">Analizza</button>
-                    <div id="cf-result-rev" class="cf-result"></div>
                 </div>
             </div>
         </div>
         <input type="file" id="import-file" accept=".json" style="display: none;">
     </div>
+    
     <div id="main-app" class="padding-24">
         <div class="container">
             <div class="header-section">
@@ -498,15 +571,22 @@
                     <fieldset class="filters-group"> <legend>Filtri Scadenza</legend> <select id="filter-year"><option value="all">Anno</option></select><select id="filter-month"><option value="all">Mese</option></select> </fieldset>
                     <fieldset class="filters-group"> <legend>Filtri Incasso</legend> <select id="filter-incasso-year"><option value="all">Anno</option></select><select id="filter-incasso-month"><option value="all">Mese</option></select> </fieldset>
                 </div>
+            </div>
+            
+            <div class="form-actions-container">
+                <h2>Archivio Polizze</h2>
                 <div class="actions">
+                    <button id="show-form-btn">+ Inserisci Nuovo Titolo</button>
                     <button id="renew-btn" title="Crea rinnovi">Crea Rinnovi</button>
                     <button id="sort-button">Ordina Scadenza</button>
                     <button onclick="printCustom()" title="Stampa">🖨️</button>
                 </div>
             </div>
-            <h2 id="form-title">Aggiungi / Modifica Titolo</h2>
-            <form id="client-form"></form>
-            <h2>Archivio Polizze</h2>
+            <div id="form-container" style="display: none;">
+                <h2 id="form-title">Aggiungi Titolo</h2>
+                <form id="client-form"></form>
+            </div>
+            
             <div class="summary" id="summary"></div>
             <table>
                  <thead>
@@ -542,6 +622,8 @@
             <div class="modal-buttons"> <button id="modal-btn-email">📧 Via Email</button> <button id="modal-btn-whatsapp">📱 Via WhatsApp</button> <button id="modal-btn-cancel">Annulla</button> </div>
         </div>
     </div>
+    
+    <div id="signature">By EvanEsse</div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -576,9 +658,9 @@
     const authError = document.getElementById('auth-error');
     const switchAuthModeLink = document.getElementById('switch-auth-mode');
     const authTitle = document.getElementById('auth-title');
-    const cfUtilityContainer = document.querySelector('.cf-utility-container');
     const mainTitle = document.getElementById('main-title');
     const birthdayNotifications = document.getElementById('birthday-notifications');
+    const cfUtilityWrapper = document.getElementById('cf-utility-wrapper');
 
     // Listener per lo stato di autenticazione
     auth.onAuthStateChanged(user => {
@@ -589,7 +671,7 @@
             mainTitle.style.display = 'block';
             landingButtons.style.display = 'grid';
             topRightButtons.style.display = 'flex';
-            cfUtilityContainer.style.display = 'block';
+            cfUtilityWrapper.style.display = 'block';
             birthdayNotifications.style.display = 'block';
             
             console.log("Utente autenticato, carico i dati da Firestore...");
@@ -622,7 +704,7 @@
             mainTitle.style.display = 'none';
             landingButtons.style.display = 'none';
             topRightButtons.style.display = 'none';
-            cfUtilityContainer.style.display = 'none';
+            cfUtilityWrapper.style.display = 'none';
             birthdayNotifications.style.display = 'none';
             showPage(landingPage);
             console.log("Utente non autenticato.");
@@ -723,6 +805,19 @@
             alert("Errore: impossibile caricare l'elenco dei comuni. Il calcolo del CF non funzionerà correttamente.");
         }
     }
+    
+    const toggleCfUtility = (show) => {
+        const minimizedView = document.getElementById('cf-utility-minimized');
+        const expandedView = document.querySelector('.cf-utility-container');
+        if (show) {
+            minimizedView.style.display = 'none';
+            expandedView.style.display = 'block';
+        } else {
+            minimizedView.style.display = 'flex';
+            expandedView.style.display = 'none';
+        }
+    };
+
 
     function calculateCF() {
         const resultText = document.getElementById('cf-result-text');
@@ -1078,7 +1173,6 @@
     
     const getRamoClass = (ramo) => { if (!ramo) return ''; const l = ramo.toLowerCase(); if (l.includes('auto')) return 'ramo-auto'; if (l.includes('vari')) return 'ramo-rami-vari'; if (l.includes('vita')) return 'ramo-vita'; return ''; };
     
-    // --- NUOVA FUNZIONE DI SUPPORTO ---
     const getPolicyOverallStatus = (policyTitles) => {
         if (policyTitles.some(title => title.status === 'annullata')) {
             return 'annullata';
@@ -1089,7 +1183,6 @@
         return 'attiva';
     };
 
-    // --- NUOVA FUNZIONE DI SUPPORTO ---
     const getStatusSymbol = (status) => {
         switch (status) {
             case 'sospesa':
@@ -1121,7 +1214,6 @@
                         return acc;
                     }, {});
 
-                    // --- LOGICA MODIFICATA QUI ---
                     detailsContainer.innerHTML = Object.keys(policiesByNumber).map(policyNumber => {
                         const policyTitles = policiesByNumber[policyNumber];
                         const firstTitle = policyTitles[0];
@@ -1177,10 +1269,32 @@
     };
 
     const navigateToTitle = (titleId) => { showPage(mainAppPage); editClient(titleId); };
-    const prepareNewTitleForClient = (clientName) => { const clientData = clients.find(c => c.nomeCliente === clientName); showPage(mainAppPage); resetForm(); if (clientData) { document.getElementById('nomeCliente').value = clientData.nomeCliente; document.getElementById('codiceFiscale').value = clientData.codiceFiscale || ''; document.getElementById('email').value = clientData.email || ''; document.getElementById('cellulare').value = clientData.cellulare || ''; } document.getElementById('form-title').scrollIntoView({ behavior: 'smooth' }); };
+    const prepareNewTitleForClient = (clientName) => { const clientData = clients.find(c => c.nomeCliente === clientName); showPage(mainAppPage); if (clientData) { document.getElementById('nomeCliente').value = clientData.nomeCliente; document.getElementById('codiceFiscale').value = clientData.codiceFiscale || ''; document.getElementById('email').value = clientData.email || ''; document.getElementById('cellulare').value = clientData.cellulare || ''; } showForm(true); };
     //</editor-fold>
     
     //<editor-fold desc="Gestionale Polizze (Funzioni Core)">
+    const formContainer = document.getElementById('form-container');
+
+    const showForm = (isNew, clientData = null) => {
+        resetForm(false); // Resetta il form senza nasconderlo
+        if (isNew) {
+            document.getElementById('form-title').textContent = 'Aggiungi Nuovo Titolo';
+            document.getElementById('submit-button').textContent = 'Aggiungi Titolo';
+            if (clientData) { // Pre-compila se arriviamo da "Aggiungi Titolo" di un cliente specifico
+                document.getElementById('nomeCliente').value = clientData.nomeCliente;
+                document.getElementById('codiceFiscale').value = clientData.codiceFiscale || '';
+                document.getElementById('email').value = clientData.email || '';
+                document.getElementById('cellulare').value = clientData.cellulare || '';
+            }
+        }
+        formContainer.style.display = 'block';
+        formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    const hideForm = () => {
+        formContainer.style.display = 'none';
+    };
+    
     const formatPremio = (premio) => {
         const p = parseFloat(premio);
         if (isNaN(p) || p === 0) {
@@ -1265,7 +1379,10 @@
         <div class="form-field" id="dataIncassoContainer" style="display:none;"><label for="dataIncasso">Data Incasso</label><input type="date" id="dataIncasso"></div>
         <div class="form-checkbox"><input type="checkbox" id="pagato" onchange="toggleDataIncasso(this.checked)"><label for="pagato">Pagato</label></div>
         <div class="form-checkbox"><input type="checkbox" id="isAnnual"><label for="isAnnual">Scadenza Annua</label></div>
-        <button type="submit" class="form-submit-button" id="submit-button">Aggiungi Titolo</button>`; 
+        <div class="form-buttons">
+            <button type="button" id="cancel-form-btn" style="background-color: #777;">Annulla</button>
+            <button type="submit" class="form-submit-button" id="submit-button">Aggiungi Titolo</button>
+        </div>`; 
         
         const c=new Date().getFullYear();
         ['filter-year','filter-incasso-year'].forEach(id=>{
@@ -1334,12 +1451,12 @@
             clients.push(d); 
             if (d.isAnnual && d.frazionamento !== 'Annuale') generateInstallments(d); 
         } 
-        resetForm(); 
+        resetForm(true); // Resetta e nasconde il form
         saveClients(); 
         renderTable(); 
     };
 
-    const editClient = (id) => { const c = clients.find(cl => cl.id === id); if (!c) return; document.getElementById('clientId').value = c.id; document.getElementById('nomeCliente').value = c.nomeCliente; document.getElementById('codiceFiscale').value = c.codiceFiscale || ''; document.getElementById('email').value = c.email || ''; document.getElementById('cellulare').value = c.cellulare || ''; document.getElementById('numeroPolizza').value = c.numeroPolizza; document.getElementById('ramoPolizza').value = c.ramoPolizza; document.getElementById('tipoPolizza').value = c.tipoPolizza || ''; document.getElementById('dataScadenza').value = c.dataScadenza; document.getElementById('frazionamento').value = c.frazionamento; document.getElementById('premio').value = c.premio; document.getElementById('pagato').checked = c.pagato; document.getElementById('isAnnual').checked = c.isAnnual; toggleDataIncasso(c.pagato); if (c.pagato) document.getElementById('dataIncasso').value = c.dataIncasso; const comp = document.getElementById('compagnia'), altro = document.getElementById('compagniaAltro'); const isStd = [...comp.options].some(opt => opt.value === c.compagnia); comp.value = isStd ? c.compagnia : 'Altro'; altro.style.display = isStd ? 'none' : 'block'; altro.value = isStd ? '' : c.compagnia; document.getElementById('form-title').textContent = 'Modifica Titolo'; document.getElementById('submit-button').textContent = 'Salva Modifiche'; document.getElementById('form-title').scrollIntoView({ behavior: 'smooth' }); };
+    const editClient = (id) => { const c = clients.find(cl => cl.id === id); if (!c) return; showForm(false); document.getElementById('clientId').value = c.id; document.getElementById('nomeCliente').value = c.nomeCliente; document.getElementById('codiceFiscale').value = c.codiceFiscale || ''; document.getElementById('email').value = c.email || ''; document.getElementById('cellulare').value = c.cellulare || ''; document.getElementById('numeroPolizza').value = c.numeroPolizza; document.getElementById('ramoPolizza').value = c.ramoPolizza; document.getElementById('tipoPolizza').value = c.tipoPolizza || ''; document.getElementById('dataScadenza').value = c.dataScadenza; document.getElementById('frazionamento').value = c.frazionamento; document.getElementById('premio').value = c.premio; document.getElementById('pagato').checked = c.pagato; document.getElementById('isAnnual').checked = c.isAnnual; toggleDataIncasso(c.pagato); if (c.pagato) document.getElementById('dataIncasso').value = c.dataIncasso; const comp = document.getElementById('compagnia'), altro = document.getElementById('compagniaAltro'); const isStd = [...comp.options].some(opt => opt.value === c.compagnia); comp.value = isStd ? c.compagnia : 'Altro'; altro.style.display = isStd ? 'none' : 'block'; altro.value = isStd ? '' : c.compagnia; document.getElementById('form-title').textContent = 'Modifica Titolo'; document.getElementById('submit-button').textContent = 'Salva Modifiche'; };
     const importFromJson = (e) => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); if (!Array.isArray(d)) throw new Error("File non valido."); if (confirm("ATTENZIONE: Sovrascrivere i dati attuali? I dati verranno salvati su Firebase.")) { clients = d; saveClients(); alert("Dati importati e salvati su Firebase! Verranno visualizzati a breve."); renderTable(); renderClientArchive(); } } catch (err) { alert("Errore: File non valido o corrotto."); } e.target.value = ''; }; r.readAsText(f); };
     
     const saveClients = () => {
@@ -1363,7 +1480,7 @@
         const parts = dateStr.split('/');
         if (parts.length !== 3) return null;
         const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1; // Mese è 0-indicizzato in JS
+        const month = parseInt(parts[1], 10) - 1;
         const year = parseInt(parts[2], 10);
         const date = new Date(year, month, day);
         if (date.getFullYear() === year && date.getMonth() === month && date.getDate() === day) {
@@ -1454,7 +1571,7 @@
     };
 
     const deleteClient=(id)=>{if(confirm('Eliminare questo titolo?')){clients=clients.filter(c=>c.id!==id);saveClients();renderTable();}};
-    const resetForm=()=>{document.getElementById('client-form').reset();document.getElementById('clientId').value='';document.getElementById('compagniaAltro').style.display='none';toggleDataIncasso(false);document.getElementById('form-title').textContent='Aggiungi Titolo';document.getElementById('submit-button').textContent='Aggiungi Titolo';};
+    const resetForm=(andHide)=>{document.getElementById('client-form').reset();document.getElementById('clientId').value='';document.getElementById('compagniaAltro').style.display='none';toggleDataIncasso(false);if(andHide)hideForm();};
     
     const sortClientsByDate=()=>{
         isSortedAsc=!isSortedAsc;
@@ -1626,6 +1743,10 @@
         document.getElementById('compagnia').addEventListener('change', e=>document.getElementById('compagniaAltro').style.display=e.target.value==='Altro'?'block':'none');
         document.getElementById('renew-btn').addEventListener('click', createRenewals);
         
+        // NUOVI LISTENER FORM POLIZZE
+        document.getElementById('show-form-btn').addEventListener('click', () => showForm(true));
+        document.getElementById('cancel-form-btn').addEventListener('click', () => resetForm(true));
+
         document.getElementById('add-new-client-btn').addEventListener('click', addNewClientInline);
         
         document.getElementById('apply-client-filter-btn').addEventListener('click', renderClientArchive);
@@ -1651,6 +1772,10 @@
         });
         document.getElementById('modal-btn-cancel').addEventListener('click', () => modal.style.display = 'none');
         
+        // NUOVI LISTENER UTILITY CODICE FISCALE
+        document.getElementById('cf-utility-minimized').addEventListener('click', () => toggleCfUtility(true));
+        document.querySelector('.cf-utility-close-btn').addEventListener('click', () => toggleCfUtility(false));
+
         document.getElementById('calculate-cf-btn').addEventListener('click', calculateCF);
         document.getElementById('reverse-cf-btn').addEventListener('click', reverseCF);
         document.getElementById('cf-copy-btn').addEventListener('click', copyCF);
