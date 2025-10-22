@@ -1078,6 +1078,31 @@
     
     const getRamoClass = (ramo) => { if (!ramo) return ''; const l = ramo.toLowerCase(); if (l.includes('auto')) return 'ramo-auto'; if (l.includes('vari')) return 'ramo-rami-vari'; if (l.includes('vita')) return 'ramo-vita'; return ''; };
     
+    // --- NUOVA FUNZIONE DI SUPPORTO ---
+    const getPolicyOverallStatus = (policyTitles) => {
+        if (policyTitles.some(title => title.status === 'annullata')) {
+            return 'annullata';
+        }
+        if (policyTitles.some(title => title.status === 'sospesa')) {
+            return 'sospesa';
+        }
+        return 'attiva';
+    };
+
+    // --- NUOVA FUNZIONE DI SUPPORTO ---
+    const getStatusSymbol = (status) => {
+        switch (status) {
+            case 'sospesa':
+                return `<span title="Polizza Sospesa" style="margin-left: 8px;">⏸️</span>`;
+            case 'annullata':
+                return `<span title="Polizza Annullata" style="margin-left: 8px;">❌</span>`;
+            case 'attiva':
+                 return `<span title="Polizza Attiva" style="margin-left: 8px;">🟢</span>`;
+            default:
+                return '';
+        }
+    };
+
     const toggleClientDetails = (element, clientName) => {
         const detailsContainer = element.closest('.client-header').nextElementSibling;
         if (detailsContainer.style.maxHeight) {
@@ -1096,20 +1121,26 @@
                         return acc;
                     }, {});
 
+                    // --- LOGICA MODIFICATA QUI ---
                     detailsContainer.innerHTML = Object.keys(policiesByNumber).map(policyNumber => {
-                        const firstTitle = policiesByNumber[policyNumber][0];
+                        const policyTitles = policiesByNumber[policyNumber];
+                        const firstTitle = policyTitles[0];
                         const ramo = firstTitle.ramoPolizza || 'N/D';
                         const compagnia = firstTitle.compagnia || 'N/D';
+                        
+                        const overallStatus = getPolicyOverallStatus(policyTitles);
+                        const statusSymbol = getStatusSymbol(overallStatus);
+
                         return `
                         <div class="policy-item">
                             <div class="policy-header ${getRamoClass(ramo)}" onclick="togglePolicyDetails(this)" style="cursor: pointer;">
-                                <span><strong>Polizza:</strong> ${policyNumber}</span>
+                                <span><strong>Polizza:</strong> ${policyNumber} ${statusSymbol}</span>
                                 <span><strong>Compagnia:</strong> ${compagnia}</span>
                                 <span><strong>Ramo:</strong> ${ramo}</span>
-                                <span>${policiesByNumber[policyNumber].length} titoli ▾</span>
+                                <span>${policyTitles.length} titoli ▾</span>
                             </div>
                             <div class="policy-details title-list">
-                                ${policiesByNumber[policyNumber].sort((a,b) => new Date(a.dataScadenza) - new Date(b.dataScadenza)).map(title => `
+                                ${policyTitles.sort((a,b) => new Date(a.dataScadenza) - new Date(b.dataScadenza)).map(title => `
                                     <div class="title-item">
                                         <span>Scad: ${new Date(title.dataScadenza).toLocaleDateString('it-IT')}</span>
                                         <span>Premio: ${formatPremio(title.premio)}</span>
@@ -1128,7 +1159,6 @@
         }
     };
 
-    // --- FUNZIONE MODIFICATA --- //
     const togglePolicyDetails = (element) => {
         const titleListContainer = element.nextElementSibling;
         const mainDetailsContainer = element.closest('.client-details');
@@ -1139,13 +1169,11 @@
             titleListContainer.style.maxHeight = titleListContainer.scrollHeight + "px";
         }
 
-        // Dopo un breve ritardo per consentire all'animazione CSS di iniziare,
-        // ricalcoliamo l'altezza del contenitore principale per adattarsi al nuovo contenuto.
         setTimeout(() => {
-            if (mainDetailsContainer.style.maxHeight) { // Controlla se il contenitore principale è aperto
+            if (mainDetailsContainer.style.maxHeight) {
                 mainDetailsContainer.style.maxHeight = mainDetailsContainer.scrollHeight + "px";
             }
-        }, 300); // Questo valore dovrebbe corrispondere alla durata della transizione in CSS
+        }, 300); 
     };
 
     const navigateToTitle = (titleId) => { showPage(mainAppPage); editClient(titleId); };
