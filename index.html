@@ -154,7 +154,6 @@
         #birthday-notifications { background-color: var(--birthday-bg); border-left: 5px solid #FBC02D; padding: 16px; margin-top: 40px; border-radius: 5px; width: 80%; max-width: 600px; text-align: left; }
         .birthday-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #FFFDE7; }
         
-        /* NUOVI STILI UTILITY CODICE FISCALE */
         #cf-utility-wrapper {
             position: fixed;
             bottom: 10px;
@@ -193,7 +192,7 @@
             box-shadow: 
                 8px 8px 16px var(--neumorphic-shadow-dark), 
                 -8px -8px 16px var(--neumorphic-shadow-light);
-            display: none; /* Nascosto di default */
+            display: none;
         }
         .cf-utility-container h3 {
              font-family: 'Exo 2', sans-serif;
@@ -317,7 +316,6 @@
         /* App Sections */
         #main-app, #client-archive { display: none; }
 
-        /* NUOVI STILI FORM POLIZZE */
         .form-actions-container {
             display: flex;
             justify-content: space-between;
@@ -389,7 +387,6 @@
         .modal-overlay { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-content { background-color: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; width: 90%; max-width: 400px; }
         
-        /* NUOVO STILE FIRMA */
         #signature {
             position: fixed;
             bottom: 10px;
@@ -398,7 +395,7 @@
             font-style: italic;
             font-size: 1.1em;
             color: #888;
-            pointer-events: none; /* Rende la firma non cliccabile */
+            pointer-events: none;
             z-index: 9999;
         }
 
@@ -665,7 +662,6 @@
     // Listener per lo stato di autenticazione
     auth.onAuthStateChanged(user => {
         if (user) {
-            // Utente LOGGATO
             currentUser = user;
             authContainer.style.display = 'none';
             mainTitle.style.display = 'block';
@@ -674,30 +670,24 @@
             cfUtilityWrapper.style.display = 'block';
             birthdayNotifications.style.display = 'block';
             
-            console.log("Utente autenticato, carico i dati da Firestore...");
             const userDocRef = db.collection('clienti').doc(currentUser.uid);
             userDocRef.get().then(doc => {
                 if (doc.exists) {
                     try {
                         clients = JSON.parse(doc.data().data);
-                        console.log("Dati recuperati con successo da Firebase.");
                     } catch (e) {
-                         console.error("Errore nel parsing dei dati da Firebase:", e);
                          clients = [];
                     }
                 } else {
-                    console.log("Nessun dato precedente. Inizio con un database vuoto.");
                     clients = [];
                 }
                 renderBirthdayNotifications();
                 if(mainAppPage.style.display === 'block') renderTable();
                 if(clientArchivePage.style.display === 'block') renderClientArchive();
             }).catch(error => {
-                console.error("Errore nel recupero dati da Firestore: ", error);
                 alert("Errore critico: impossibile caricare i dati.");
             });
         } else {
-            // Utente NON LOGGATO
             currentUser = null;
             clients = [];
             authContainer.style.display = 'flex';
@@ -707,7 +697,6 @@
             cfUtilityWrapper.style.display = 'none';
             birthdayNotifications.style.display = 'none';
             showPage(landingPage);
-            console.log("Utente non autenticato.");
         }
     });
     
@@ -743,12 +732,7 @@
         if (isLoginMode) {
             auth.signInWithEmailAndPassword(email, password)
                 .catch(error => {
-                    console.error("Errore di login:", error.code, error.message);
-                    if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                         authError.textContent = 'Credenziali non valide.';
-                    } else {
-                         authError.textContent = 'Errore di autenticazione.';
-                    }
+                    authError.textContent = 'Credenziali non valide.';
                 });
         } else {
             if (password.length < 6) {
@@ -757,11 +741,8 @@
             }
             auth.createUserWithEmailAndPassword(email, password)
                 .catch(error => {
-                    console.error("Errore di registrazione:", error.code, error.message);
                     if (error.code === 'auth/email-already-in-use') {
                         authError.textContent = 'Questa email è già registrata.';
-                    } else if (error.code === 'auth/invalid-email') {
-                        authError.textContent = 'Email non valida.';
                     } else {
                         authError.textContent = 'Errore di registrazione.';
                     }
@@ -802,7 +783,6 @@
             comuniData = await response.json();
         } catch (error) {
             console.error("Impossibile caricare i dati dei comuni:", error);
-            alert("Errore: impossibile caricare l'elenco dei comuni. Il calcolo del CF non funzionerà correttamente.");
         }
     }
     
@@ -825,7 +805,7 @@
         copyBtn.style.display = 'none';
 
         if (!comuniData) {
-            resultText.textContent = "Dati dei comuni non ancora caricati. Riprova.";
+            resultText.textContent = "Dati comuni non caricati.";
             return;
         }
 
@@ -846,7 +826,7 @@
         const comuneCode = getComuneCode(comune);
 
         if (!comuneCode) {
-            resultText.textContent = "Comune non trovato. Inserire il nome corretto (es: ROMA).";
+            resultText.textContent = "Comune non trovato.";
             return;
         }
 
@@ -862,15 +842,13 @@
         if(navigator.clipboard && cfText) {
             navigator.clipboard.writeText(cfText).then(() => {
                 alert('Codice Fiscale copiato!');
-            }, (err) => {
-                alert('Errore durante la copia.');
             });
         }
     }
 
     function reverseCF() {
         if (!comuniData) {
-            alert("Dati dei comuni non ancora caricati. Riprova tra un istante.");
+            alert("Dati comuni non caricati. Riprova.");
             return;
         }
 
@@ -901,7 +879,7 @@
         const comune = comuniData.find(c => c.codiceCatastale === comuneCode);
 
         if (isNaN(day) || month === undefined || isNaN(year) || !comune) {
-             resultDiv.textContent = "Codice Fiscale non valido o dati non interpretabili.";
+             resultDiv.textContent = "Codice Fiscale non valido.";
              return;
         }
 
@@ -914,8 +892,7 @@
     function getCognomeCode(cognome) {
         const cons = getConsonants(cognome);
         const vows = getVowels(cognome);
-        let code = (cons + vows + "XXX").substring(0, 3);
-        return code;
+        return (cons + vows + "XXX").substring(0, 3);
     }
     
     function getNomeCode(nome) {
@@ -933,9 +910,7 @@
         const year = String(date.getFullYear()).slice(-2);
         const month = "ABCDEHLMPRST"[date.getMonth()];
         let day = date.getDate();
-        if (sesso === 'F') {
-            day += 40;
-        }
+        if (sesso === 'F') day += 40;
         return year + month + String(day).padStart(2, '0');
     }
 
@@ -951,11 +926,8 @@
         
         for (let i = 0; i < 15; i++) {
             const c = partialCF[i];
-            if ((i + 1) % 2 === 0) {
-                val += evenMap[c];
-            } else {
-                val += oddMap[c];
-            }
+            if ((i + 1) % 2 === 0) val += evenMap[c];
+            else val += oddMap[c];
         }
         return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[val % 26];
     }
@@ -1080,26 +1052,20 @@
     };
     
     const deleteClientAnagrafica = (clientName) => {
-        if (confirm(`Sei sicuro di voler eliminare l'anagrafica di "${clientName}"? Verranno rimosse anche TUTTE le polizze associate. L'azione è irreversibile.`)) {
-            const originalLength = clients.length;
+        if (confirm(`Sei sicuro di voler eliminare l'anagrafica di "${clientName}" e TUTTE le polizze associate?`)) {
             clients = clients.filter(c => c.nomeCliente !== clientName);
-            if (clients.length < originalLength) {
-                saveClients();
-                renderClientArchive();
-                alert(`Anagrafica di "${clientName}" e relative polizze eliminate con successo.`);
-            }
+            saveClients();
+            renderClientArchive();
+            alert(`Anagrafica di "${clientName}" eliminata.`);
         }
     };
 
     const addNewClientInline = () => {
-        if (document.getElementById('new-client-form')) {
-            alert("Stai già aggiungendo un nuovo cliente. Completa prima l'inserimento attuale.");
-            return;
-        }
+        if (document.getElementById('new-client-form')) return;
 
         const container = document.getElementById('client-list-container');
         const newClientHTML = `
-            <div class="client-item" id="new-client-form" style="border-color: var(--primary-color); border-width: 2px;">
+            <div class="client-item" id="new-client-form" style="border-color: var(--primary-color);">
                 <div class="client-header">
                     <div class="client-info-grid">
                         <div class="client-data-fields">
@@ -1107,7 +1073,7 @@
                             <input type="text" id="new-codiceFiscale" placeholder="CF / P.IVA">
                             <input type="tel" id="new-cellulare" placeholder="Cellulare">
                             <input type="email" id="new-email" placeholder="Email">
-                            <input type="text" id="new-linkedProfiles" placeholder="Legami (es. Padre di...)" style="grid-column: 1 / -1;">
+                            <input type="text" id="new-linkedProfiles" placeholder="Legami" style="grid-column: 1 / -1;">
                         </div>
                         <div class="client-actions">
                             <button onclick="saveNewClientAnagrafica()" title="Salva">💾</button>
@@ -1115,8 +1081,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
+            </div>`;
         
         container.insertAdjacentHTML('afterbegin', newClientHTML);
         document.getElementById('new-nomeCliente').focus();
@@ -1124,45 +1089,31 @@
 
     const saveNewClientAnagrafica = () => {
         const newName = document.getElementById('new-nomeCliente').value.trim();
-        const newCf = document.getElementById('new-codiceFiscale').value.toUpperCase().trim();
-        const newCell = document.getElementById('new-cellulare').value.trim();
-        const newEmail = document.getElementById('new-email').value.trim();
-        const newLinks = document.getElementById('new-linkedProfiles').value.trim();
-
         if (!newName) {
             alert("Il campo Nome Cliente è obbligatorio.");
             return;
         }
-
         if (clients.some(c => c.nomeCliente.trim().toLowerCase() === newName.toLowerCase())) {
-            alert("Esiste già un cliente con questo nome. Utilizzare un nome univoco.");
+            alert("Esiste già un cliente con questo nome.");
             return;
         }
         
         const newClientRecord = {
             id: 'id-' + Date.now(),
             nomeCliente: newName,
-            codiceFiscale: newCf,
-            cellulare: newCell,
-            email: newEmail,
-            linkedProfiles: newLinks, 
-            compagnia: 'N/D',
-            numeroPolizza: 'N/D',
-            ramoPolizza: 'N/D',
+            codiceFiscale: document.getElementById('new-codiceFiscale').value.toUpperCase().trim(),
+            cellulare: document.getElementById('new-cellulare').value.trim(),
+            email: document.getElementById('new-email').value.trim(),
+            linkedProfiles: document.getElementById('new-linkedProfiles').value.trim(), 
+            compagnia: 'N/D', numeroPolizza: 'N/D', ramoPolizza: 'N/D',
             dataScadenza: new Date().toISOString().slice(0, 10),
-            frazionamento: 'Annuale',
-            premio: 0,
-            pagato: false,
-            dataIncasso: null,
-            isAnnual: false,
-            status: 'attiva',
-            provvigioni: 0,
-            differenza: 0
+            frazionamento: 'Annuale', premio: 0, pagato: false, dataIncasso: null,
+            isAnnual: false, status: 'attiva', provvigioni: 0, differenza: 0
         };
 
         clients.push(newClientRecord);
         saveClients();
-        alert(`Anagrafica per "${newName}" creata con successo!`);
+        alert(`Anagrafica per "${newName}" creata!`);
         renderClientArchive();
     };
 
@@ -1174,25 +1125,17 @@
     const getRamoClass = (ramo) => { if (!ramo) return ''; const l = ramo.toLowerCase(); if (l.includes('auto')) return 'ramo-auto'; if (l.includes('vari')) return 'ramo-rami-vari'; if (l.includes('vita')) return 'ramo-vita'; return ''; };
     
     const getPolicyOverallStatus = (policyTitles) => {
-        if (policyTitles.some(title => title.status === 'annullata')) {
-            return 'annullata';
-        }
-        if (policyTitles.some(title => title.status === 'sospesa')) {
-            return 'sospesa';
-        }
+        if (policyTitles.some(title => title.status === 'annullata')) return 'annullata';
+        if (policyTitles.some(title => title.status === 'sospesa')) return 'sospesa';
         return 'attiva';
     };
 
     const getStatusSymbol = (status) => {
         switch (status) {
-            case 'sospesa':
-                return `<span title="Polizza Sospesa" style="margin-left: 8px;">⏸️</span>`;
-            case 'annullata':
-                return `<span title="Polizza Annullata" style="margin-left: 8px;">❌</span>`;
-            case 'attiva':
-                 return `<span title="Polizza Attiva" style="margin-left: 8px;">🟢</span>`;
-            default:
-                return '';
+            case 'sospesa': return `<span title="Polizza Sospesa" style="margin-left: 8px;">⏸️</span>`;
+            case 'annullata': return `<span title="Polizza Annullata" style="margin-left: 8px;">❌</span>`;
+            case 'attiva': return `<span title="Polizza Attiva" style="margin-left: 8px;">🟢</span>`;
+            default: return '';
         }
     };
 
@@ -1205,7 +1148,7 @@
             if (!detailsContainer.innerHTML) {
                 const clientPolicies = clients.filter(c => c.nomeCliente === clientName && c.numeroPolizza !== 'N/D');
                 if (clientPolicies.length === 0) {
-                     detailsContainer.innerHTML = `<div style="padding: 15px; text-align: center;">Nessuna polizza trovata per questo cliente.</div>`;
+                     detailsContainer.innerHTML = `<div style="padding: 15px; text-align: center;">Nessuna polizza trovata.</div>`;
                 } else {
                     const policiesByNumber = clientPolicies.reduce((acc, policy) => {
                         const key = policy.numeroPolizza;
@@ -1269,18 +1212,24 @@
     };
 
     const navigateToTitle = (titleId) => { showPage(mainAppPage); editClient(titleId); };
-    const prepareNewTitleForClient = (clientName) => { const clientData = clients.find(c => c.nomeCliente === clientName); showPage(mainAppPage); if (clientData) { document.getElementById('nomeCliente').value = clientData.nomeCliente; document.getElementById('codiceFiscale').value = clientData.codiceFiscale || ''; document.getElementById('email').value = clientData.email || ''; document.getElementById('cellulare').value = clientData.cellulare || ''; } showForm(true); };
+    
+    // --- FUNZIONE MODIFICATA ---
+    const prepareNewTitleForClient = (clientName) => {
+        const clientData = clients.find(c => c.nomeCliente === clientName);
+        showPage(mainAppPage);
+        showForm(true, clientData); // Passa i dati del cliente alla funzione showForm
+    };
     //</editor-fold>
     
     //<editor-fold desc="Gestionale Polizze (Funzioni Core)">
     const formContainer = document.getElementById('form-container');
 
     const showForm = (isNew, clientData = null) => {
-        resetForm(false); // Resetta il form senza nasconderlo
+        resetForm(false);
         if (isNew) {
             document.getElementById('form-title').textContent = 'Aggiungi Nuovo Titolo';
             document.getElementById('submit-button').textContent = 'Aggiungi Titolo';
-            if (clientData) { // Pre-compila se arriviamo da "Aggiungi Titolo" di un cliente specifico
+            if (clientData) {
                 document.getElementById('nomeCliente').value = clientData.nomeCliente;
                 document.getElementById('codiceFiscale').value = clientData.codiceFiscale || '';
                 document.getElementById('email').value = clientData.email || '';
@@ -1320,8 +1269,8 @@
         if (filteredClients.length === 0) {
             const isMobile = window.innerWidth <= 992;
             const colspan = isMobile ? 1 : 15;
-            tableBody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding:20px;">Nessun risultato trovato.</td></tr>`;
-            document.getElementById('summary').textContent = 'Totale Premi Incassati (visualizzati): 0.00 € | Totale Provvigioni Incassate (visualizzate): 0.00 €';
+            tableBody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding:20px;">Nessun risultato.</td></tr>`;
+            document.getElementById('summary').textContent = 'Totale Premi Incassati: 0.00 € | Totale Provvigioni Incassate: 0.00 €';
             return;
         }
 
@@ -1421,27 +1370,8 @@
 
         if (d.id) {
             const i = clients.findIndex(c => c.id === d.id);
-            const oldRecord = { ...clients[i] };
             d.status = clients[i].status || 'attiva'; 
             clients[i] = { ...clients[i], ...d };
-
-            const rateFrazionamenti = ['Semestrale', 'Quadrimestrale', 'Trimestrale'];
-            if (rateFrazionamenti.includes(d.frazionamento) && oldRecord.premio !== d.premio) {
-                clients.forEach(targetClient => {
-                    if (
-                        targetClient.id !== d.id && 
-                        targetClient.numeroPolizza === d.numeroPolizza &&
-                        !targetClient.isAnnual
-                    ) {
-                        const timeDiff = Math.abs(new Date(d.dataScadenza) - new Date(targetClient.dataScadenza));
-                        const daysDiff = timeDiff / (1000 * 3600 * 24);
-                        if (daysDiff < 360) {
-                           targetClient.premio = d.premio;
-                        }
-                    }
-                });
-            }
-
         } else { 
             d.id = 'id-' + Date.now(); 
             d.provvigioni = 0; 
@@ -1451,25 +1381,20 @@
             clients.push(d); 
             if (d.isAnnual && d.frazionamento !== 'Annuale') generateInstallments(d); 
         } 
-        resetForm(true); // Resetta e nasconde il form
+        resetForm(true);
         saveClients(); 
         renderTable(); 
     };
 
     const editClient = (id) => { const c = clients.find(cl => cl.id === id); if (!c) return; showForm(false); document.getElementById('clientId').value = c.id; document.getElementById('nomeCliente').value = c.nomeCliente; document.getElementById('codiceFiscale').value = c.codiceFiscale || ''; document.getElementById('email').value = c.email || ''; document.getElementById('cellulare').value = c.cellulare || ''; document.getElementById('numeroPolizza').value = c.numeroPolizza; document.getElementById('ramoPolizza').value = c.ramoPolizza; document.getElementById('tipoPolizza').value = c.tipoPolizza || ''; document.getElementById('dataScadenza').value = c.dataScadenza; document.getElementById('frazionamento').value = c.frazionamento; document.getElementById('premio').value = c.premio; document.getElementById('pagato').checked = c.pagato; document.getElementById('isAnnual').checked = c.isAnnual; toggleDataIncasso(c.pagato); if (c.pagato) document.getElementById('dataIncasso').value = c.dataIncasso; const comp = document.getElementById('compagnia'), altro = document.getElementById('compagniaAltro'); const isStd = [...comp.options].some(opt => opt.value === c.compagnia); comp.value = isStd ? c.compagnia : 'Altro'; altro.style.display = isStd ? 'none' : 'block'; altro.value = isStd ? '' : c.compagnia; document.getElementById('form-title').textContent = 'Modifica Titolo'; document.getElementById('submit-button').textContent = 'Salva Modifiche'; };
-    const importFromJson = (e) => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); if (!Array.isArray(d)) throw new Error("File non valido."); if (confirm("ATTENZIONE: Sovrascrivere i dati attuali? I dati verranno salvati su Firebase.")) { clients = d; saveClients(); alert("Dati importati e salvati su Firebase! Verranno visualizzati a breve."); renderTable(); renderClientArchive(); } } catch (err) { alert("Errore: File non valido o corrotto."); } e.target.value = ''; }; r.readAsText(f); };
+    const importFromJson = (e) => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); if (!Array.isArray(d)) throw new Error("File non valido."); if (confirm("Sovrascrivere i dati attuali con quelli del file?")) { clients = d; saveClients(); alert("Dati importati!"); renderTable(); renderClientArchive(); } } catch (err) { alert("Errore: File non valido."); } e.target.value = ''; }; r.readAsText(f); };
     
     const saveClients = () => {
         if (currentUser) {
             const userDocRef = db.collection('clienti').doc(currentUser.uid);
-            userDocRef.set({ data: JSON.stringify(clients) })
-                .then(() => console.log("Backup su Firebase riuscito!"))
-                .catch(error => {
-                    console.error("Errore nel backup su Firebase: ", error);
-                    alert("ATTENZIONE: Salvataggio su Cloud fallito.");
-                });
-        } else {
-            console.warn("Nessun utente loggato, salvataggio ignorato.");
+            userDocRef.set({ data: JSON.stringify(clients) }).catch(error => {
+                alert("ATTENZIONE: Salvataggio su Cloud fallito.");
+            });
         }
     };
     
@@ -1483,9 +1408,7 @@
         const month = parseInt(parts[1], 10) - 1;
         const year = parseInt(parts[2], 10);
         const date = new Date(year, month, day);
-        if (date.getFullYear() === year && date.getMonth() === month && date.getDate() === day) {
-            return date;
-        }
+        if (date.getFullYear() === year && date.getMonth() === month && date.getDate() === day) return date;
         return null;
     };
 
@@ -1496,27 +1419,24 @@
         const originalRecord = clients[recordIndex];
 
         if (newStatus === 'sospesa') {
-            const suspensionDateStr = prompt("Inserisci la data di SOSPENSIONE (formato GG/MM/AAAA):");
+            const suspensionDateStr = prompt("Data SOSPENSIONE (GG/MM/AAAA):");
             if (!suspensionDateStr) { renderTable(); return; }
             
             const suspensionDate = parseDate(suspensionDateStr);
             if (!suspensionDate) {
-                alert("Data di sospensione non valida. Usare il formato GG/MM/AAAA. L'operazione è stata annullata.");
-                renderTable(); return;
+                alert("Data non valida."); renderTable(); return;
             }
 
-            const reactivationDateStr = prompt("Inserisci la data di RIATTIVAZIONE (formato GG/MM/AAAA):");
+            const reactivationDateStr = prompt("Data RIATTIVAZIONE (GG/MM/AAAA):");
             if (!reactivationDateStr) { renderTable(); return; }
 
             const reactivationDate = parseDate(reactivationDateStr);
             if (!reactivationDate) {
-                alert("Data di riattivazione non valida. Usare il formato GG/MM/AAAA. L'operazione è stata annullata.");
-                renderTable(); return;
+                alert("Data non valida."); renderTable(); return;
             }
 
             if (reactivationDate <= suspensionDate) {
-                alert("La data di riattivazione deve essere successiva a quella di sospensione. L'operazione è stata annullata.");
-                renderTable(); return;
+                alert("La data di riattivazione deve essere successiva."); renderTable(); return;
             }
             
             originalRecord.status = 'sospesa';
@@ -1530,7 +1450,7 @@
                 }
             });
 
-            alert("Polizza sospesa con successo. Le scadenze future sono state posticipate.");
+            alert("Scadenze posticipate.");
             saveClients();
             renderTable();
         } else {
@@ -1545,26 +1465,7 @@
     const updateField=(id,f,v)=>{
         const index = clients.findIndex(c=>c.id===id);
         if(index !== -1){
-            const updatedValue = (f==='differenza'||f==='provvigioni') ? parseFloat(v) || 0 : v;
-            clients[index][f] = updatedValue;
-
-            if (f === 'provvigioni') {
-                const updatedRecord = clients[index];
-                if (!updatedRecord.isAnnual) {
-                    const currentDate = new Date(updatedRecord.dataScadenza);
-                    clients.forEach(targetClient => {
-                        if (
-                            targetClient.id !== id &&
-                            targetClient.numeroPolizza === updatedRecord.numeroPolizza &&
-                            !targetClient.isAnnual &&
-                            new Date(targetClient.dataScadenza) > currentDate 
-                        ) {
-                           targetClient.provvigioni = updatedValue;
-                        }
-                    });
-                }
-            }
-
+            clients[index][f] = (f==='differenza'||f==='provvigioni') ? parseFloat(v) || 0 : v;
             saveClients();
             renderTable();
         }
@@ -1573,13 +1474,9 @@
     const deleteClient=(id)=>{if(confirm('Eliminare questo titolo?')){clients=clients.filter(c=>c.id!==id);saveClients();renderTable();}};
     const resetForm=(andHide)=>{document.getElementById('client-form').reset();document.getElementById('clientId').value='';document.getElementById('compagniaAltro').style.display='none';toggleDataIncasso(false);if(andHide)hideForm();};
     
-    const sortClientsByDate=()=>{
-        isSortedAsc=!isSortedAsc;
-        clients.sort((a,b)=>isSortedAsc?new Date(a.dataScadenza)-new Date(b.dataScadenza):new Date(b.dataScadenza)-new Date(a.dataScadenza));
-        renderTable();
-    };
+    const sortClientsByDate=()=>{isSortedAsc=!isSortedAsc;clients.sort((a,b)=>isSortedAsc?new Date(a.dataScadenza)-new Date(b.dataScadenza):new Date(b.dataScadenza)-new Date(a.dataScadenza));renderTable();};
 
-    const exportToJson=()=>{if(clients.length===0){alert("Nessun dato da esportare.");return}const d=clients,s=JSON.stringify(d,null,2),b=new Blob([s],{type:"application/json"}),u=URL.createObjectURL(b),l=document.createElement('a');l.download=`backup_clienti_${new Date().toISOString().slice(0,10)}.json`;l.href=u;document.body.appendChild(l);l.click();document.body.removeChild(l);URL.revokeObjectURL(u);alert("Backup locale esportato!")};
+    const exportToJson=()=>{if(clients.length===0){alert("Nessun dato da esportare.");return}const d=clients,s=JSON.stringify(d,null,2),b=new Blob([s],{type:"application/json"}),u=URL.createObjectURL(b),a=document.createElement('a');a.download=`backup_clienti_${new Date().toISOString().slice(0,10)}.json`;a.href=u;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);};
     
     const createRenewals=()=>{
         const y=new Date().getFullYear(),r=prompt("Anno di riferimento:",y);
@@ -1588,52 +1485,31 @@
         if(!confirm(`Creare rinnovi per ${t} da polizze annuali del ${r}?`))return;
         
         const excludedFraz = ['Temporanea', 'Premio Unico', 'Annullamento'];
-        const p=clients.filter(c=>
-            c.isAnnual && 
-            new Date(c.dataScadenza).getFullYear()==r && 
-            !excludedFraz.includes(c.frazionamento) &&
-            c.status !== 'annullata'
-        );
+        const p=clients.filter(c=> c.isAnnual && new Date(c.dataScadenza).getFullYear()==r && !excludedFraz.includes(c.frazionamento) && c.status !== 'annullata');
         
-        if(p.length===0){alert(`Nessuna polizza annuale attiva trovata per ${r} da rinnovare.`);return}
+        if(p.length===0){alert(`Nessuna polizza annuale trovata per ${r}.`);return}
         let n=0;
         p.forEach(o=>{
             const d=new Date(o.dataScadenza),e=new Date(d.setFullYear(d.getFullYear()+1)),x=clients.some(c=>c.numeroPolizza===o.numeroPolizza&&new Date(c.dataScadenza).getFullYear()===t);
             if(!x){
-                const w={...o};
-                w.id='id-'+Date.now()+Math.random();
-                w.dataScadenza=e.toISOString().slice(0,10);
-                w.premio=0;
-                w.pagato=false;
-                w.dataIncasso=null;
-                w.differenza=0;
-                w.provvigioni=0;
-                w.status='attiva';
-                clients.push(w);
-                n++
+                const w={...o}; w.id='id-'+Date.now()+Math.random(); w.dataScadenza=e.toISOString().slice(0,10); w.premio=0; w.pagato=false; w.dataIncasso=null; w.differenza=0; w.provvigioni=0; w.status='attiva';
+                clients.push(w); n++;
             }
         });
-        if(n>0){saveClients();renderTable();alert(`${n} rinnovi creati per ${t}.`)}else alert(`Nessun nuovo rinnovo da creare per ${t}.`)
+        if(n>0){saveClients();renderTable();alert(`${n} rinnovi creati per ${t}.`)}else alert(`Nessun nuovo rinnovo da creare.`)
     };
 
     const printCustom = () => {
         const header = document.getElementById('print-header');
         const monthSelect = document.getElementById('filter-incasso-month');
         const yearSelect = document.getElementById('filter-incasso-year');
-        const monthValue = monthSelect.value;
-        const yearValue = yearSelect.value;
-        const monthText = monthValue === 'all' ? '' : monthSelect.options[monthSelect.selectedIndex].text;
-        const yearText = yearValue === 'all' ? '' : yearValue;
+        const monthText = monthSelect.value === 'all' ? '' : monthSelect.options[monthSelect.selectedIndex].text;
+        const yearText = yearSelect.value === 'all' ? '' : yearSelect.value;
         let title = "Incassi";
-        if (monthText && yearText) {
-            title += ` ${monthText} ${yearText}`;
-        } else if (monthText) {
-            title += ` ${monthText}`;
-        } else if (yearText) {
-            title += ` ${yearText}`;
-        } else {
-            title += " (Tutti)";
-        }
+        if (monthText && yearText) title += ` ${monthText} ${yearText}`;
+        else if (monthText) title += ` ${monthText}`;
+        else if (yearText) title += ` ${yearText}`;
+        else title += " (Tutti)";
         header.textContent = title;
         window.print();
     };
@@ -1646,18 +1522,11 @@
         const todayKey = 'sentGreetings_' + today.toISOString().slice(0, 10);
         const sentToday = JSON.parse(localStorage.getItem(todayKey)) || [];
 
-        const birthdayClientsToday = clients.filter(client => {
-            if (sentToday.includes(client.id)) {
-                return false;
-            }
-            if (!client.codiceFiscale) return false;
-            const birthDate = getBirthdayFromCF(client.codiceFiscale);
-            return birthDate && birthDate.getMonth() === today.getMonth() && birthDate.getDate() === today.getDate();
-        });
-
         const uniqueBirthdays = new Map();
-        birthdayClientsToday.forEach(client => {
-            if (client.codiceFiscale) {
+        clients.forEach(client => {
+            if (sentToday.includes(client.id) || !client.codiceFiscale) return;
+            const birthDate = getBirthdayFromCF(client.codiceFiscale);
+            if (birthDate && birthDate.getMonth() === today.getMonth() && birthDate.getDate() === today.getDate()) {
                 uniqueBirthdays.set(client.codiceFiscale, client);
             }
         });
@@ -1668,11 +1537,7 @@
             container.style.display = 'none';
         } else {
             container.style.display = 'block';
-            let html = `<h4>🎂 Compleanni di Oggi</h4>`;
-            birthdaysToShow.forEach(client => {
-                html += `<div class="birthday-item" id="bday-${client.id}"><span>${client.nomeCliente}</span><button onclick="sendBirthdayGreeting('${client.id}')">Invia Auguri</button></div>`;
-            });
-            container.innerHTML = html;
+            container.innerHTML = `<h4>🎂 Compleanni di Oggi</h4>` + birthdaysToShow.map(client => `<div class="birthday-item" id="bday-${client.id}"><span>${client.nomeCliente}</span><button onclick="sendBirthdayGreeting('${client.id}')">Invia Auguri</button></div>`).join('');
         }
     };
 
@@ -1686,30 +1551,17 @@
         renderBirthdayNotifications();
     };
 
-    const getExpirationStatus=(c)=>{const d=new Date(c.dataScadenza),s=d.toLocaleDateString('it-IT');if(c.status==='annullata')return{class:'status-annullata',text:s};if(c.status==='sospesa')return{class:'status-suspended',text:`⏸️ ${s}`};if(c.pagato)return{class:'status-paid',text:s};const o=new Date();o.setHours(0,0,0,0);const g=c.compagnia&&c.compagnia.toLowerCase()==='vittoria'?30:15,f=new Date(d);f.setDate(f.getDate()+g);if(o>f)return{class:'status-danger',text:`Scaduta (${s})`};const a=Math.round((d-o)/864e5);if(o>d)return{class:'status-danger',text:`In mora (-${Math.abs(a)}gg)`};if(a<=15)return{class:'status-warning',text:`In scadenza (+${a}gg)`};return{class:'',text:s}};
+    const getExpirationStatus=(c)=>{const d=new Date(c.dataScadenza),s=d.toLocaleDateString('it-IT');if(c.status==='annullata')return{class:'status-annullata',text:s};if(c.status==='sospesa')return{class:'status-suspended',text:`⏸️ ${s}`};if(c.pagato)return{class:'status-paid',text:s};const o=new Date();o.setHours(0,0,0,0);const g=c.compagnia&&c.compagnia.toLowerCase()==='vittoria'?30:15,f=new Date(d);f.setDate(f.getDate()+g);const a=Math.round((d-o)/864e5);if(o>f)return{class:'status-danger',text:`Scaduta (${s})`};if(o>d)return{class:'status-danger',text:`In mora (-${Math.abs(a)}gg)`};if(a<=15)return{class:'status-warning',text:`In scadenza (+${a}gg)`};return{class:'',text:s}};
     const sendEmailGreeting=(c)=>{const m=`Gentile ${c.nomeCliente},\n\nLe porgiamo i nostri più sinceri auguri.\n\nSaluti.`,s="Buon Compleanno!";window.location.href=`mailto:${c.email}?subject=${encodeURIComponent(s)}&body=${encodeURIComponent(m)}`};
     const sendWhatsappGreeting=(c)=>{const m=`Gentile ${c.nomeCliente},\n\nLe porgiamo i nostri più sinceri auguri.\n\nSaluti.`;let p=c.cellulare.replace(/[^0-9+]/g,'');if(!p.startsWith('+'))p='39'+p.replace(/^0+/,'');window.open(`https://web.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(m)}`,'_blank')};
     
     const sendBirthdayGreeting=(id)=>{
-        const c=clients.find(l=>l.id===id);
-        if(!c) return;
-        
-        const h=c.email&&c.email.includes('@');
-        const p=c.cellulare&&/^\+?[0-9\s-]{7,}$/.test(c.cellulare);
-        
-        if(h&&p){
-            const m=document.getElementById('choice-modal');
-            m.style.display='flex';
-            m.dataset.clientId=id;
-        } else if(h) {
-            sendEmailGreeting(c);
-            markGreetingAsSent(id);
-        } else if(p) {
-            sendWhatsappGreeting(c);
-            markGreetingAsSent(id);
-        } else {
-            alert("Nessun contatto (email/cellulare) valido per inviare gli auguri.");
-        }
+        const c=clients.find(l=>l.id===id); if(!c) return;
+        const h=c.email&&c.email.includes('@'), p=c.cellulare&&/^\+?[0-9\s-]{7,}$/.test(c.cellulare);
+        if(h&&p){const m=document.getElementById('choice-modal');m.style.display='flex';m.dataset.clientId=id;} 
+        else if(h){sendEmailGreeting(c);markGreetingAsSent(id);}
+        else if(p){sendWhatsappGreeting(c);markGreetingAsSent(id);}
+        else alert("Nessun contatto valido per inviare gli auguri.");
     };
     //</editor-fold>
 
@@ -1721,10 +1573,8 @@
             const d = new Date();
             document.getElementById('filter-month').value = d.getMonth() + 1;
             document.getElementById('filter-year').value = d.getFullYear();
-            
             clients.sort((a, b) => new Date(a.dataScadenza) - new Date(b.dataScadenza));
             isSortedAsc = true;
-            
             renderTable();
         });
 
@@ -1743,12 +1593,25 @@
         document.getElementById('compagnia').addEventListener('change', e=>document.getElementById('compagniaAltro').style.display=e.target.value==='Altro'?'block':'none');
         document.getElementById('renew-btn').addEventListener('click', createRenewals);
         
-        // NUOVI LISTENER FORM POLIZZE
         document.getElementById('show-form-btn').addEventListener('click', () => showForm(true));
         document.getElementById('cancel-form-btn').addEventListener('click', () => resetForm(true));
+        
+        // --- NUOVA LOGICA AUTOCOMPLETE ---
+        document.getElementById('nomeCliente').addEventListener('input', (e) => {
+            const inputName = e.target.value.trim().toLowerCase();
+            const isEditing = document.getElementById('clientId').value !== '';
+            if (isEditing) return; // Non eseguire l'autocomplete se si sta modificando un titolo
+            
+            const existingClient = clients.find(c => c.nomeCliente.trim().toLowerCase() === inputName);
+            if (existingClient) {
+                document.getElementById('codiceFiscale').value = existingClient.codiceFiscale || '';
+                document.getElementById('email').value = existingClient.email || '';
+                document.getElementById('cellulare').value = existingClient.cellulare || '';
+            }
+        });
+
 
         document.getElementById('add-new-client-btn').addEventListener('click', addNewClientInline);
-        
         document.getElementById('apply-client-filter-btn').addEventListener('click', renderClientArchive);
         document.getElementById('search-name').addEventListener('keyup', (e) => { if (e.key === 'Enter') renderClientArchive(); });
         document.getElementById('search-cf').addEventListener('keyup', (e) => { if (e.key === 'Enter') renderClientArchive(); });
@@ -1756,39 +1619,26 @@
         const modal = document.getElementById('choice-modal');
         document.getElementById('modal-btn-email').addEventListener('click', () => { 
             const id = modal.dataset.clientId; 
-            if (id) {
-                sendEmailGreeting(clients.find(c => c.id === id));
-                markGreetingAsSent(id); 
-            }
+            if (id) { sendEmailGreeting(clients.find(c => c.id === id)); markGreetingAsSent(id); }
             modal.style.display = 'none';
         });
         document.getElementById('modal-btn-whatsapp').addEventListener('click', () => { 
             const id = modal.dataset.clientId; 
-            if (id) {
-                sendWhatsappGreeting(clients.find(c => c.id === id));
-                markGreetingAsSent(id);
-            }
+            if (id) { sendWhatsappGreeting(clients.find(c => c.id === id)); markGreetingAsSent(id); }
             modal.style.display = 'none';
         });
         document.getElementById('modal-btn-cancel').addEventListener('click', () => modal.style.display = 'none');
         
-        // NUOVI LISTENER UTILITY CODICE FISCALE
         document.getElementById('cf-utility-minimized').addEventListener('click', () => toggleCfUtility(true));
         document.querySelector('.cf-utility-close-btn').addEventListener('click', () => toggleCfUtility(false));
-
         document.getElementById('calculate-cf-btn').addEventListener('click', calculateCF);
         document.getElementById('reverse-cf-btn').addEventListener('click', reverseCF);
         document.getElementById('cf-copy-btn').addEventListener('click', copyCF);
+
         const tabCalc = document.getElementById('tab-btn-calc'), tabRev = document.getElementById('tab-btn-rev');
         const panelCalc = document.getElementById('cf-calc-panel'), panelRev = document.getElementById('cf-rev-panel');
-        tabCalc.addEventListener('click', () => {
-            tabCalc.classList.add('active'); tabRev.classList.remove('active');
-            panelCalc.classList.add('active'); panelRev.classList.remove('active');
-        });
-        tabRev.addEventListener('click', () => {
-            tabRev.classList.add('active'); tabCalc.classList.remove('active');
-            panelRev.classList.add('active'); panelCalc.classList.remove('active');
-        });
+        tabCalc.addEventListener('click', () => { tabCalc.classList.add('active'); tabRev.classList.remove('active'); panelCalc.classList.add('active'); panelRev.classList.remove('active'); });
+        tabRev.addEventListener('click', () => { tabRev.classList.add('active'); tabCalc.classList.remove('active'); panelRev.classList.add('active'); panelCalc.classList.remove('active'); });
 
         loadComuni();
     });
