@@ -517,7 +517,7 @@
             </div>
 
             <div id="birthday-notifications" style="display: none;"></div>
-       
+        
             <div id="cf-utility-wrapper">
                 <div id="cf-utility-minimized">
                     <span><strong>CF</strong></span> Utility Codice Fiscale <span>+</span>
@@ -751,7 +751,7 @@
     });
 
     logoutBtn.addEventListener('click', () => {
-         auth.signOut();
+       auth.signOut();
     });
 
     //<editor-fold desc="Variabili Globali e Funzioni Pagine">
@@ -1300,7 +1300,9 @@
                 <td data-label="${headers[12]}"><input type="number" step="0.01" class="inline-editable" value="${(parseFloat(client.differenza) || 0).toFixed(2)}" onchange="updateField('${client.id}', 'differenza', this.value)"> €</td>
                 <td data-label="${headers[13]}"><input type="number" step="0.01" class="inline-editable" value="${(parseFloat(client.provvigioni) || 0).toFixed(2)}" onchange="updateField('${client.id}', 'provvigioni', this.value)"> €</td>
                 <td data-label="${headers[14]}" class="action-cell">
-                    <button onclick="editClient('${client.id}')" title="Modifica">✏️</button> <button onclick="deleteClient('${client.id}')" title="Elimina">🗑️</button>
+                    <button onclick="editClient('${client.id}')" title="Modifica">✏️</button> 
+                    <button onclick="sharePolicyDetails('${client.id}')" title="Condividi">📤</button>
+                    <button onclick="deleteClient('${client.id}')" title="Elimina">🗑️</button>
                     <select onchange="updateStatus('${client.id}', this.value)" title="Cambia Stato">
                         <option value="attiva" ${ (client.status || 'attiva') === 'attiva' ? 'selected' : ''}>Attiva</option>
                         <option value="sospesa" ${client.status === 'sospesa' ? 'selected' : ''}>Sospendi</option>
@@ -1562,6 +1564,54 @@
         else if(h){sendEmailGreeting(c);markGreetingAsSent(id);}
         else if(p){sendWhatsappGreeting(c);markGreetingAsSent(id);}
         else alert("Nessun contatto valido per inviare gli auguri.");
+    };
+
+    // --- NUOVA FUNZIONE DI CONDIVISIONE ---
+    const IBAN_MAP = {
+        'ALLIANZ': 'IBAN: IT45N0538766470000001289367\nIntestato a: VITRANI LUIGI AGENTE ASSICURATIVO',
+        'HDI': 'IBAN: IT02M0538766470000002538265\nIntestato a: PV CONSULENZE ASSICURATIVE di Poligani Gino & C. SAS',
+        'ARAG': 'IBAN: IT02M0538766470000002538265\nIntestato a: PV CONSULENZE ASSICURATIVE di Poligani Gino & C. SAS',
+        'VITTORIA': 'IBAN: IT58J0303266470010000866029\nIntestato a: RUBIERA ASSICURA di Poligani Gino & C. SAS',
+        'GENIALPIU': 'IBAN: IT50O0358901600010570015482\nIntestato a: ALLIANZ DIRECT SPA',
+        'HELVETIA': 'IBAN: IT93W0306912711100000011938\nIntestato a: APSA SRL',
+        'METLIFE': 'IBAN: IT25F0306912711100000018243\nIntestato a: METLIFE EUROPE D.A.C.'
+    };
+
+    const sharePolicyDetails = async (id) => {
+        if (!navigator.share) {
+            alert('La funzione di condivisione non è disponibile su questo dispositivo/browser.');
+            return;
+        }
+
+        const client = clients.find(c => c.id === id);
+        if (!client) {
+            alert('Dati polizza non trovati.');
+            return;
+        }
+
+        const scadenza = new Date(client.dataScadenza).toLocaleDateString('it-IT');
+        const premio = (parseFloat(client.premio) || 0).toFixed(2).replace('.', ',') + ' €';
+
+        const companyKey = client.compagnia ? client.compagnia.trim().toUpperCase().replace("'", "") : '';
+        const ibanDetails = IBAN_MAP[companyKey] || 'IBAN non disponibile per questa compagnia.';
+
+        let shareText = `📝 Riepilogo Polizza 📝\n\n`;
+        shareText += `Cliente: ${client.nomeCliente}\n`;
+        shareText += `Compagnia: ${client.compagnia}\n`;
+        shareText += `N. Polizza: ${client.numeroPolizza}\n`;
+        shareText += `Ramo: ${client.ramoPolizza}\n`;
+        shareText += `Scadenza: ${scadenza}\n`;
+        shareText += `Premio: ${premio}\n\n`;
+        shareText += `Dati per il pagamento:\n${ibanDetails}`;
+
+        try {
+            await navigator.share({
+                title: 'Dettagli Polizza',
+                text: shareText,
+            });
+        } catch (err) {
+            console.error('Errore durante la condivisione (l\'utente potrebbe aver annullato):', err);
+        }
     };
     //</editor-fold>
 
